@@ -1,5 +1,6 @@
 import json
 from dataclasses import asdict
+from sentinelscan.config import LEGAL_NOTICE, REPORT_DISCLAIMER
 from sentinelscan.core.findings import ScanResult
 from sentinelscan.report.base import BaseReporter
 
@@ -9,6 +10,8 @@ class JsonReporter(BaseReporter):
 
     def render(self, r: ScanResult) -> str:
         data = {
+            "legal_banner": LEGAL_NOTICE,
+            "legal_disclaimer": REPORT_DISCLAIMER,
             "target": r.target,
             "timestamp": r.timestamp.isoformat(),
             "duration_seconds": round(r.duration, 2),

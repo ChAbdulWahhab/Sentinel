@@ -1,4 +1,5 @@
 import html
+from sentinelscan.config import LEGAL_NOTICE, REPORT_DISCLAIMER
 from sentinelscan.core.findings import ScanResult, Severity
 from sentinelscan.report.base import BaseReporter
 
@@ -20,6 +21,9 @@ TEMPLATE = """<!doctype html>
 </style></head>
 <body><div class="wrap">
 <h1>🛡️ SentinelScan Report</h1>
+<div style="background:#21262d;border-left:4px solid #d29922;padding:12px 16px;margin:16px 0;font-size:13px;border-radius:4px;color:#e6edf3">
+<b>⚠️ Legal Notice:</b> {legal_banner}
+</div>
 <p><b>Target:</b> {target}<br>
 <b>Date:</b> {date}<br>
 <b>Duration:</b> {duration}s<br>
@@ -32,6 +36,9 @@ TEMPLATE = """<!doctype html>
 <ul>{tech}</ul>
 <h2>Info</h2>
 {info}
+<footer style="margin-top:40px;border-top:1px solid #30363d;padding-top:16px;font-size:12px;color:#8b949e">
+<b>Disclaimer:</b> {legal_disclaimer}
+</footer>
 </div></body></html>"""
 
 
@@ -69,4 +76,6 @@ class HtmlReporter(BaseReporter):
             n_findings=len(r.findings),
             tech="".join(f"<li>{html.escape(t)}</li>" for t in sorted(r.tech)) or "<li>-</li>",
             info=info_html,
+            legal_banner=html.escape(LEGAL_NOTICE),
+            legal_disclaimer=html.escape(REPORT_DISCLAIMER),
         )

@@ -16,6 +16,7 @@ import io
 from pathlib import Path
 from typing import Any
 
+from sentinelscan.config import LEGAL_NOTICE, REPORT_DISCLAIMER
 from sentinelscan.core.findings import ScanResult
 from sentinelscan.report.base import BaseReporter
 
@@ -84,6 +85,9 @@ class CsvReporter(BaseReporter):
             doublequote=True,
         )
 
+        # Legal Banner
+        writer.writerow([f"# LEGAL NOTICE: {LEGAL_NOTICE}"])
+
         # Header
         writer.writerow(COLUMNS)
 
@@ -118,6 +122,10 @@ class CsvReporter(BaseReporter):
                 _clean(f.evidence, EVIDENCE_LIMIT),
                 timestamp,
             ])
+
+        # Footer Disclaimer
+        writer.writerow([])
+        writer.writerow([f"# LEGAL DISCLAIMER: {REPORT_DISCLAIMER}"])
 
         return buf.getvalue()
 

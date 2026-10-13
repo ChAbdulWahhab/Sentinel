@@ -1,6 +1,7 @@
 """Markdown reporter — GitHub / GitLab friendly."""
 from __future__ import annotations
 
+from sentinelscan.config import LEGAL_NOTICE, REPORT_DISCLAIMER
 from sentinelscan.core.findings import ScanResult, Severity
 from sentinelscan.report.base import BaseReporter
 
@@ -11,6 +12,8 @@ class MarkdownReporter(BaseReporter):
     def render(self, r: ScanResult) -> str:
         L: list[str] = []
         L.append(f"# SentinelScan Report - {r.target}")
+        L.append("")
+        L.append(f"> **Legal Notice:** {LEGAL_NOTICE}")
         L.append("")
         L.append(f"- **Date:** {r.timestamp:%Y-%m-%d %H:%M}")
         L.append(f"- **Duration:** {r.duration:.1f}s")
@@ -72,5 +75,8 @@ class MarkdownReporter(BaseReporter):
         L.append("|---|---|---|")
         for u, (s, t) in sorted(r.pages.items()):
             L.append(f"| {s} | {t} | {u} |")
+        L.append("")
+        L.append("---")
+        L.append(f"*Disclaimer: {REPORT_DISCLAIMER}*")
         L.append("")
         return "\n".join(L)

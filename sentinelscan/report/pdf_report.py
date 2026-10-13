@@ -1,5 +1,6 @@
 """PDF report (requires reportlab)."""
 from __future__ import annotations
+from sentinelscan.config import LEGAL_NOTICE, REPORT_DISCLAIMER
 from sentinelscan.core.findings import ScanResult
 from sentinelscan.report.base import BaseReporter
 
@@ -25,9 +26,11 @@ class PdfReporter(BaseReporter):
                                 leftMargin=2*cm, rightMargin=2*cm,
                                 topMargin=2*cm, bottomMargin=2*cm)
         story = []
-        story.append(Paragraph(f"<b>SentinelScan Report</b>", styles["Title"]))
+        story.append(Paragraph("<b>SentinelScan Report</b>", styles["Title"]))
         story.append(Paragraph(f"Target: {result.target}", styles["Normal"]))
         story.append(Paragraph(f"Date: {result.timestamp:%Y-%m-%d %H:%M}", styles["Normal"]))
+        story.append(Spacer(1, 6))
+        story.append(Paragraph(f"<b>Legal Notice:</b> {LEGAL_NOTICE}", styles["Normal"]))
         story.append(Spacer(1, 12))
 
         story.append(Paragraph("Summary", styles["Heading2"]))
@@ -52,5 +55,8 @@ class PdfReporter(BaseReporter):
             if f.fix:
                 story.append(Paragraph(f"Fix: {f.fix}", styles["Normal"]))
             story.append(Spacer(1, 8))
+
+        story.append(Spacer(1, 14))
+        story.append(Paragraph(f"<b>Disclaimer:</b> {REPORT_DISCLAIMER}", styles["Normal"]))
 
         doc.build(story)

@@ -1,6 +1,7 @@
 """SARIF 2.1.0 reporter for GitHub code scanning."""
 from __future__ import annotations
 import json
+from sentinelscan.config import LEGAL_NOTICE, REPORT_DISCLAIMER
 from sentinelscan.core.findings import ScanResult, Severity
 from sentinelscan.report.base import BaseReporter
 
@@ -58,9 +59,17 @@ class SarifReporter(BaseReporter):
                 "tool": {
                     "driver": {
                         "name": "SentinelScan",
-                        "informationUri": "https://github.com/you/sentinelscan",
+                        "informationUri": "https://github.com/ChAbdulWahhab/sentinelscan",
                         "rules": list(rules.values()),
+                        "properties": {
+                            "legalNotice": LEGAL_NOTICE,
+                            "disclaimer": REPORT_DISCLAIMER,
+                        },
                     }
+                },
+                "properties": {
+                    "legalNotice": LEGAL_NOTICE,
+                    "disclaimer": REPORT_DISCLAIMER,
                 },
                 "results": results,
             }],

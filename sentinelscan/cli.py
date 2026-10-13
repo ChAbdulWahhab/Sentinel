@@ -107,6 +107,10 @@ def scan(
     quiet: bool = typer.Option(False, "--quiet", "-q", help="Show final summary only"),
     verbose: bool = typer.Option(False, "--verbose", "-v"),
     yes: bool = typer.Option(False, "--yes", "-y", help="Skip authorization prompt"),
+    i_own_this: Optional[str] = typer.Option(
+        None, "--i-own-this",
+        help="Declare domain ownership (e.g. example.com) to bypass interactive consent prompt",
+    ),
     config: Optional[Path] = typer.Option(None, "--config", help="TOML config file"),
 ) -> None:
     """Run a security audit against a target URL."""
@@ -120,15 +124,59 @@ def scan(
         console.print(f"[red]✗ Invalid URL:[/red] {e}")
         raise typer.Exit(1)
 
-    # 2) Authorization confirmation
-    if not yes:
-        console.print(
-            f"\n[yellow]⚠️  Legal reminder:[/yellow] Scan only [bold]{target.host}[/bold] "
-            "if you own it or have explicit written permission.\n"
-        )
-        if not Confirm.ask("Are you authorized to scan this target?", default=False):
-            console.print("[red]Cancelled.[/red]")
-            raise typer.Exit(0)
+    # 2) Authorization and consent verification
+    from sentinelscan.ui.consent import has_consent, prompt_for_consent
+    from sentinelscan.utils.audit import log_audit_event
+
+    auth_method = "none"
+    if i_own_this:
+        declared = i_own_this.strip().lower()
+        host = target.host.lower()
+        if declared == host or host.endswith("." + declared):
+            auth_method = "i-own-this"
+        else:
+            console.print(
+                f"[red]✗ Domain mismatch:[/red] Declared ownership for '{i_own_this}' "
+                f"does not match target host '{target.host}'."
+            )
+            log_audit_event(
+                action="SCAN_BLOCKED_DOMAIN_MISMATCH",
+                target=target.base,
+                auth_method="i-own-this-failed",
+                extra={"declared_domain": i_own_this, "target_host": target.host},
+                output_dir=output,
+            )
+            raise typer.Exit(1)
+    elif yes:
+        auth_method = "yes-flag"
+    elif has_consent():
+        auth_method = "saved-consent"
+    else:
+        # Prompt if interactive TTY, else block
+        if hasattr(sys.stdout, "isatty") and sys.stdout.isatty():
+            if prompt_for_consent(console, target.host):
+                auth_method = "interactive-consent"
+            else:
+                console.print("[red]Cancelled. Consent required to perform scan.[/red]")
+                log_audit_event(
+                    action="SCAN_CANCELLED_NO_CONSENT",
+                    target=target.base,
+                    auth_method="declined",
+                    output_dir=output,
+                )
+                raise typer.Exit(0)
+        else:
+            console.print(
+                "[red]Error:[/red] Terms consent required. Run interactively to accept terms, "
+                "or pass --yes or --i-own-this <domain>."
+            )
+            log_audit_event(
+                action="SCAN_BLOCKED_NON_INTERACTIVE_NO_CONSENT",
+                target=target.base,
+                auth_method="none",
+                output_dir=output,
+            )
+            raise typer.Exit(1)
 
     # 3) Build module list
     from sentinelscan.modules import ALL_MODULES
@@ -152,6 +200,13 @@ def scan(
                 extra_headers[k.strip()] = v.strip()
 
     # 5) Run engine
+    log_audit_event(
+        action="SCAN_STARTED",
+        target=target.base,
+        auth_method=auth_method,
+        extra={"modules": selected, "concurrency": concurrency, "rate": rate},
+        output_dir=output,
+    )
     engine = ScanEngine(
         target=target,
         modules=selected,
@@ -169,7 +224,24 @@ def scan(
 
     try:
         result = asyncio.run(engine.run(progress=ScanProgress(console, quiet=quiet)))
+        log_audit_event(
+            action="SCAN_COMPLETED",
+            target=target.base,
+            auth_method=auth_method,
+            extra={
+                "duration": round(result.duration, 2),
+                "findings_count": len(result.findings),
+                "counts": {s.name: n for s, n in result.counts().items()},
+            },
+            output_dir=output,
+        )
     except KeyboardInterrupt:
+        log_audit_event(
+            action="SCAN_INTERRUPTED",
+            target=target.base,
+            auth_method=auth_method,
+            output_dir=output,
+        )
         console.print("\n[yellow]Interrupted by user.[/yellow]")
         raise typer.Exit(130)
 
