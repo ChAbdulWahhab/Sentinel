@@ -42,7 +42,7 @@ class TlsHttpsModule(BaseModule):
                     url=http_url,
                 )
 
-        # Deep TLS inspection (blocking — thread me chalao)
+        # Deep TLS inspection (blocking — run in thread)
         loop = asyncio.get_event_loop()
         await loop.run_in_executor(None, self._inspect_tls)
         return self.findings
@@ -101,15 +101,15 @@ class TlsHttpsModule(BaseModule):
                                  url=self.target.base)
 
         except ssl.SSLCertVerificationError as e:
-            # 🔥 False positive guard: Python ka local trust store stale
-            # ho sakta hai (khaas kar macOS pe). openssl se verify karo.
+            # 🔥 False positive guard: Python's local trust store may be stale
+            # (especially on macOS). Verify with OpenSSL.
             if self._openssl_verifies_ok(host, port):
-                # False positive — Python bundle stale tha, but cert valid hai
+                # False positive — Python bundle was stale, but certificate is valid
                 self.ctx.setdefault("info", {})["TLS note"] = (
                     "Python default TLS verification failed but OpenSSL passed — "
                     "upgrade certifi: pip install --upgrade certifi"
                 )
-                # LOW severity me downgrade karo, HIGH me na
+                # Downgrade to LOW severity instead of HIGH
                 self.add(
                     severity=Severity.LOW,
                     title="TLS verification failed in Python (certificate is valid)",
@@ -153,7 +153,7 @@ class TlsHttpsModule(BaseModule):
                 timeout=10,
             )
             out = (proc.stdout + proc.stderr).decode("utf-8", errors="ignore")
-            # "Verify return code: 0 (ok)" ya "Verify return code: 0"
+            # "Verify return code: 0 (ok)" or "Verify return code: 0"
             return "Verify return code: 0" in out
         except Exception:
             return False

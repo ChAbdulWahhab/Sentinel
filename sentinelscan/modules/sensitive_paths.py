@@ -34,7 +34,7 @@ CRITICAL_IF_200 = {
     "/adminer.php", "/server-status", "/.htpasswd", "/wp-config.php.bak",
 }
 
-# Soft 404 detection keywords (response me honi chahiye color ke liye)
+# Soft 404 detection keywords (must be present in response)
 CRITICAL_KEYWORDS = (
     "db_password", "app_key", "db_host", "aws_secret", "secret_key",
     "[core]", "repositoryformatversion", "phpinfo()", "ref:", "refs/heads",

@@ -147,7 +147,7 @@ class Crawler:
         await self._process(self.target.root)
 
     async def mine_js(self):
-        """JS files se API endpoints nikalo."""
+        """Extract API endpoints from JS files."""
         for js in list(self.scripts)[:30]:
             if not self._same_site(js):
                 continue

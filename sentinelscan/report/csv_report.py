@@ -1,12 +1,12 @@
 """CSV reporter — Excel-friendly output.
 
-Excel ko UTF-8 BOM chahiye warna Hindi/emoji galat dikhte hain.
-Isliye ye reporter `write()` override karta hai aur `utf-8-sig` use karta hai.
+Excel requires a UTF-8 BOM, otherwise non-ASCII characters display incorrectly.
+Therefore, this reporter overrides `write()` and uses `utf-8-sig`.
 
 Notes:
-    - newline=""        -> csv module apna line terminator manage kare
+    - newline=""        -> let the csv module manage its own line terminator
     - lineterminator="\\n" -> mixed CRLF/LF newlines avoid
-    - utf-8-sig         -> Excel me Hindi/emoji sahi dikhe
+    - utf-8-sig         -> display non-ASCII/emojis correctly in Excel
     - Excel cell limit  -> 32767 chars per cell
 """
 from __future__ import annotations
@@ -37,7 +37,7 @@ COLUMNS = [
 
 # Excel cell character limit
 EXCEL_CELL_LIMIT = 32000
-# Evidence shorter rakhna hai (readability ke liye)
+# Keep evidence shorter (for readability)
 EVIDENCE_LIMIT = 500
 
 
@@ -52,11 +52,11 @@ def _clean(value: Any, limit: int | None = None) -> str:
     if value is None:
         return ""
     s = str(value)
-    # CRLF, CR, LF sabko single space me
+    # Replace CRLF, CR, LF with a single space
     s = s.replace("\r\n", " ").replace("\n", " ").replace("\r", " ")
-    # Null bytes aur other control chars hata do (CSV/Excel crash karte hain)
+    # Strip null bytes and other control chars (they crash CSV/Excel)
     s = "".join(ch for ch in s if ch == "\t" or ord(ch) >= 32)
-    # Multiple spaces ko single me collapse (optional)
+    # Collapse multiple spaces into one (optional)
     s = " ".join(s.split())
     if limit and len(s) > limit:
         s = s[: limit - 3] + "..."
@@ -64,7 +64,7 @@ def _clean(value: Any, limit: int | None = None) -> str:
 
 
 def _strip_backticks(value: str) -> str:
-    """Markdown-style backtick wrapper hata do."""
+    """Strip markdown-style backtick wrapper."""
     s = value.strip()
     if s.startswith("`") and s.endswith("`"):
         return s[1:-1].strip()
@@ -125,7 +125,7 @@ class CsvReporter(BaseReporter):
         """Write CSV with UTF-8 BOM (Excel-compatible)."""
         path.parent.mkdir(parents=True, exist_ok=True)
         content = self.render(result)
-        # utf-8-sig = UTF-8 + BOM -> Excel sahi khole
-        # newline="" = csv module apna newline manage karega
+        # utf-8-sig = UTF-8 + BOM -> opens correctly in Excel
+        # newline="" = let csv module manage newlines
         with path.open("w", encoding="utf-8-sig", newline="") as fh:
             fh.write(content)

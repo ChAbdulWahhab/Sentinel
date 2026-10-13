@@ -1,4 +1,4 @@
-"""JWT tokens detect karo + 'none' alg test."""
+"""JWT token detection and 'none' algorithm test."""
 from __future__ import annotations
 
 import base64
@@ -18,18 +18,18 @@ class JwtProbeModule(BaseModule):
     requires_crawl = True
 
     async def run(self):
-        # --- Guard: ctx me scripts set hona chahiye ---
+        # --- Guard: scripts in ctx should be a set ---
         scripts = self.ctx.get("scripts") or set()
         if not isinstance(scripts, (set, list, tuple)):
             scripts = set()
         scripts = list(scripts)[:20]
 
-        # --- Guard: pages dict hona chahiye ---
+        # --- Guard: pages should be a dict ---
         pages = self.ctx.get("pages") or {}
         if not isinstance(pages, dict):
             pages = {}
 
-        # --- JS files me tokens dhoondo ---
+        # --- Find tokens in JS files ---
         for js in scripts:
             if not isinstance(js, str) or not js:
                 continue
@@ -46,7 +46,7 @@ class JwtProbeModule(BaseModule):
             for tok in set(JWT_RX.findall(body)):
                 self._analyze(tok, js)
 
-        # --- Response bodies me bhi ---
+        # --- Check response bodies as well ---
         for url in list(pages.keys())[:20]:
             if not isinstance(url, str) or not url:
                 continue

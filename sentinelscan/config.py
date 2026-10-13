@@ -7,7 +7,7 @@ APP_NAME = "SentinelScan"
 VERSION = "0.1.0"
 DEFAULT_UA = f"SentinelScan/{VERSION} (+https://github.com/ChAbdulWahhab/sentinelscan) SelfAudit"
 
-# Report formats jo CLI accept karta hai
+# Report formats accepted by the CLI
 DEFAULT_FORMATS = {
     "markdown", "md",
     "json",
@@ -30,7 +30,7 @@ DEFAULT_CONCURRENCY = 10
 DEFAULT_RATE_REQUESTS = 20
 DEFAULT_TIMEOUT = 10
 
-# Legal notice — CLI pe dikhta hai
+# Legal notice — displayed in the CLI
 LEGAL_NOTICE = (
     "Use this tool only on websites you own or have explicit authorization to test. "
     "Unauthorized scanning is illegal (IT Act 2000 Sec 43/66, CFAA, etc.). "

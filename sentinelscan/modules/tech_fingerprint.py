@@ -17,7 +17,7 @@ class TechFingerprintModule(BaseModule):
         info = self.ctx.setdefault("info", {})
         tech = self.ctx.setdefault("tech", set())
 
-        # ye headers sirf info me collect karo — headers module already finding banata hai
+        # Collect these headers in info only — headers module already creates findings
         for h in ("server", "x-powered-by", "x-aspnet-version", "x-generator",
                   "x-drupal-cache", "x-shopify-stage", "x-vercel-id", "x-amz-cf-id"):
             v = None
@@ -28,7 +28,7 @@ class TechFingerprintModule(BaseModule):
             if v:
                 tech.add(f"{h}: {v}")
 
-        # Body patterns se tech detect karo (agar crawler ne nahi kiya)
+        # Detect tech from body patterns (if crawler did not)
         try:
             body = r.text or ""
         except Exception:

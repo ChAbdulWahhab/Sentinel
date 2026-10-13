@@ -22,7 +22,7 @@ class CookiesModule(BaseModule):
         if r is None:
             return self.findings
 
-        # httpx me get_list use karo
+        # use get_list in httpx
         try:
             raw = r.headers.get_list("set-cookie")
         except Exception:

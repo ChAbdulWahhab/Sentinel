@@ -1,9 +1,9 @@
-"""Scan engine — modules ko orchestrate karta hai.
+"""Scan engine — orchestrates modules.
 
-Ye file teen kaam karti hai:
-  1. Crawl (agar kisi module ko crawl chahiye)
-  2. Modules ko semaphore ke saath concurrent run karna
-  3. Findings ko ScanResult me wrap karna
+This file performs three tasks:
+  1. Crawling (if any module requires crawl data)
+  2. Running modules concurrently with a semaphore
+  3. Wrapping findings into a ScanResult
 """
 from __future__ import annotations
 
@@ -65,7 +65,7 @@ class ScanEngine:
             concurrency=self.concurrency,
         ) as session:
 
-            # Shared context jo har module padh sakta hai
+            # Shared context readable by every module
             ctx: dict[str, Any] = {
                 "pages": {},
                 "scripts": set(),
@@ -77,7 +77,7 @@ class ScanEngine:
                 "rate_requests": self.rate_requests,
             }
 
-            # ---- Crawl (agar koi module maange) ----
+            # ---- Crawl (if any module requests it) ----
             needs_crawl = any(
                 ALL_MODULES[m].requires_crawl for m in self.module_names
             )
@@ -89,7 +89,7 @@ class ScanEngine:
                     concurrency=self.concurrency,
                 )
                 await crawler.crawl()
-                await crawler.mine_js()   # JS endpoints bhi nikaal lo
+                await crawler.mine_js()   # Also extract JS endpoints
                 ctx["pages"] = crawler.pages
                 ctx["scripts"] = crawler.scripts
                 ctx["forms"] = crawler.forms
@@ -97,7 +97,7 @@ class ScanEngine:
                 ctx["tech"] = crawler.tech
                 progress.done("crawl", f"{len(crawler.pages)} pages")
 
-            # ---- Modules run (semaphore se limited) ----
+            # ---- Run modules (limited by semaphore) ----
             findings: list[Finding] = []
             errors: list[str] = []
             sem = asyncio.Semaphore(self.concurrency)

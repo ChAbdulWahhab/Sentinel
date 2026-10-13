@@ -1,7 +1,7 @@
 """Report generators.
 
-Har format ek class hai jo BaseReporter inherit karti hai.
-CLI `get_reporter(fmt)` call karta hai.
+Each format is a class inheriting from BaseReporter.
+The CLI calls `get_reporter(fmt)`.
 
 Supported formats:
   - markdown / md

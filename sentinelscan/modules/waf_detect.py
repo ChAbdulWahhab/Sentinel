@@ -24,7 +24,7 @@ class WafDetectModule(BaseModule):
     description = "WAF / CDN fingerprint"
 
     async def run(self):
-        # Payload jo usually WAF trigger karta hai (harmless)
+        # Harmless payload that usually triggers a WAF
         payload = "/?q=<script>alert(1)</script>"
         r = await self.session.get(self.target.base + payload)
         detected = set()

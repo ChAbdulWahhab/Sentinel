@@ -1,4 +1,4 @@
-"""Finding model — har check isko return karega."""
+"""Finding model — returned by each check."""
 from __future__ import annotations
 
 from dataclasses import dataclass, field

@@ -1,6 +1,6 @@
 """Live scan progress with Rich.
 
-Do tarah se use kar sakte ho:
+Can be used in two ways:
 
   1. Simple (context manager):
         with ScanProgress(console) as p:
@@ -8,10 +8,10 @@ Do tarah se use kar sakte ho:
             ...
             p.done("crawl", "12 pages")
 
-  2. Engine ke saath (no-op fallback for quiet):
+  2. With engine (no-op fallback for quiet):
         progress = ScanProgress(console, quiet=False)
         engine.run(progress=progress)
-        # engine khud start/done/fail call karta hai
+        # engine itself calls start/done/fail
 """
 from __future__ import annotations
 
@@ -26,7 +26,7 @@ from rich.progress import (
 
 
 class _NoopProgress:
-    """Quiet mode ke liye stub — kuch bhi render nahi karta."""
+    """Stub for quiet mode — renders nothing."""
     def start(self, *_a, **_kw): ...
     def done(self, *_a, **_kw): ...
     def fail(self, *_a, **_kw): ...
@@ -39,7 +39,7 @@ class ScanProgress:
     def __init__(self, console: Console | None = None, quiet: bool = False):
         self.quiet = quiet
         if quiet:
-            # self ko proxy kar do — engine gracefully ignore karega
+            # Proxy self — engine will gracefully ignore
             self._noop = _NoopProgress()
             return
 

@@ -11,7 +11,7 @@ from sentinelscan.core.target import Target
 class BaseModule(ABC):
     name: str = "base"
     description: str = "Base module"
-    requires_crawl: bool = False   # agar True, engine pehle crawl karega
+    requires_crawl: bool = False   # if True, engine crawls first
 
     def __init__(self, target: Target, session: HttpSession, ctx: dict):
         self.target = target

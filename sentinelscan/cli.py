@@ -64,7 +64,7 @@ def main_callback(
         typer.echo(f"{APP_NAME} v{VERSION}")
         raise typer.Exit(0)
 
-    # Koi subcommand nahi diya -> interactive menu
+    # No subcommand given -> interactive menu
     if ctx.invoked_subcommand is None:
         from sentinelscan.ui.menu import run_interactive_menu
         run_interactive_menu()

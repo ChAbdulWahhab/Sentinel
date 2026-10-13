@@ -1,4 +1,4 @@
-"""Module registry — naya module yahan register karo."""
+"""Module registry — register new modules here."""
 from sentinelscan.modules.base import BaseModule
 from sentinelscan.modules.headers import HeadersModule
 from sentinelscan.modules.tls_https import TlsHttpsModule
