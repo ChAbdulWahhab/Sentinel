@@ -1,4 +1,4 @@
-"""Target URL validation aur normalization."""
+"""Target URL validation and normalization."""
 from __future__ import annotations
 
 from urllib.parse import urlparse, urlunparse
@@ -8,7 +8,7 @@ class Target:
     def __init__(self, raw: str):
         raw = raw.strip()
         if not raw:
-            raise ValueError("URL empty hai")
+            raise ValueError("Target URL cannot be empty")
         if not raw.startswith(("http://", "https://")):
             raw = "https://" + raw
 
@@ -16,7 +16,7 @@ class Target:
         if not p.netloc:
             raise ValueError(f"Invalid host: {raw}")
         if "." not in p.hostname and p.hostname not in ("localhost",):
-            raise ValueError(f"Host valid nahi lag raha: {p.hostname}")
+            raise ValueError(f"Invalid target host: {p.hostname}")
 
         self.scheme = p.scheme
         self.hostname = p.hostname

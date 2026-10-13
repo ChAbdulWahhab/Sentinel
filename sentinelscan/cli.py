@@ -33,17 +33,17 @@ def main_callback(
     ctx: typer.Context,
     version: bool = typer.Option(
         False, "--version", "-V",
-        help="Version dikhao aur exit",
+        help="Show version and exit",
         is_eager=True,
     ),
 ) -> None:
     """SentinelScan — interactive security audit.
 
-    Bina subcommand chalao to menu aayega:
+    Run without subcommand to open interactive menu:
 
         $ sscan
 
-    Ya seedha scan:
+    Or run a direct scan:
 
         $ sscan scan https://example.com
     """
@@ -63,7 +63,7 @@ def scan(
     url: str = typer.Argument(..., help="Target URL e.g. https://example.com"),
     output: Path = typer.Option(
         Path("./reports"), "--output", "-o",
-        help="Output directory (har format ke liye ek file banegi)",
+        help="Output directory (one report file per format)",
     ),
     formats: str = typer.Option(
         "markdown,json,html", "--formats", "-f",
@@ -71,26 +71,26 @@ def scan(
     ),
     modules: Optional[str] = typer.Option(
         None, "--modules", "-m",
-        help="Sirf ye modules chalao (comma separated). Default: saare.",
+        help="Run only these modules (comma-separated). Default: all.",
     ),
     exclude: Optional[str] = typer.Option(
         None, "--exclude", "-x",
-        help="Ye modules skip karo (comma separated).",
+        help="Skip these modules (comma-separated).",
     ),
     max_pages: int = typer.Option(40, "--max-pages", help="Crawl limit"),
     concurrency: int = typer.Option(10, "--concurrency", "-c", help="Parallel requests"),
     rate: int = typer.Option(20, "--rate", "-r", help="Rate-limit test requests"),
     timeout: int = typer.Option(10, "--timeout", help="Per-request timeout (s)"),
-    insecure: bool = typer.Option(False, "--insecure", "-k", help="TLS verify skip"),
+    insecure: bool = typer.Option(False, "--insecure", "-k", help="Skip TLS certificate verification"),
     proxy: Optional[str] = typer.Option(None, "--proxy", help="http://host:port"),
     user_agent: Optional[str] = typer.Option(None, "--ua", help="Custom User-Agent"),
     cookie: Optional[str] = typer.Option(None, "--cookie", help="Cookie header"),
     header: Optional[list[str]] = typer.Option(None, "--header", "-H", help="Extra header (repeatable)"),
     interactive: bool = typer.Option(False, "--interactive", "-i", help="Full-screen TUI dashboard"),
     no_color: bool = typer.Option(False, "--no-color"),
-    quiet: bool = typer.Option(False, "--quiet", "-q", help="Sirf final summary"),
+    quiet: bool = typer.Option(False, "--quiet", "-q", help="Show final summary only"),
     verbose: bool = typer.Option(False, "--verbose", "-v"),
-    yes: bool = typer.Option(False, "--yes", "-y", help="Authorization prompt skip"),
+    yes: bool = typer.Option(False, "--yes", "-y", help="Skip authorization prompt"),
     config: Optional[Path] = typer.Option(None, "--config", help="TOML config file"),
 ) -> None:
     """Run a security audit against a target URL."""
@@ -107,10 +107,10 @@ def scan(
     # 2) Authorization confirmation
     if not yes:
         console.print(
-            f"\n[yellow]⚠️  Legal reminder:[/yellow] Sirf [bold]{target.host}[/bold] "
-            "ke owner ya authorized tester hi scan karein.\n"
+            f"\n[yellow]⚠️  Legal reminder:[/yellow] Scan only [bold]{target.host}[/bold] "
+            "if you own it or have explicit written permission.\n"
         )
-        if not Confirm.ask("Aap authorized hain?", default=False):
+        if not Confirm.ask("Are you authorized to scan this target?", default=False):
             console.print("[red]Cancelled.[/red]")
             raise typer.Exit(0)
 
@@ -124,7 +124,7 @@ def scan(
         skip = {m.strip() for m in exclude.split(",")}
         selected = [m for m in selected if m not in skip]
     if not selected:
-        console.print("[red]Koi module select nahi hua.[/red]")
+        console.print("[red]No modules selected.[/red]")
         raise typer.Exit(1)
 
     # 4) Extra headers

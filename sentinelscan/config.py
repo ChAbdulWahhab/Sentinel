@@ -32,7 +32,7 @@ DEFAULT_TIMEOUT = 10
 
 # Legal notice — CLI pe dikhta hai
 LEGAL_NOTICE = (
-    "Ye tool sirf apni ya authorized websites par use karein. "
-    "Unauthorized scanning illegal hai (IT Act 2000 Sec 43/66, CFAA, etc.). "
-    "User khud zimmedar hai kisi bhi misuse ke liye."
+    "Use this tool only on websites you own or have explicit authorization to test. "
+    "Unauthorized scanning is illegal (IT Act 2000 Sec 43/66, CFAA, etc.). "
+    "The user assumes full responsibility for any misuse."
 )

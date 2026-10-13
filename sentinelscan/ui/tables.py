@@ -29,7 +29,7 @@ def render_summary(console: Console, r: ScanResult) -> None:
 
 def render_findings(console: Console, r: ScanResult) -> None:
     if not r.findings:
-        console.print("[green]✓ Koi finding nahi mili.[/green]")
+        console.print("[green]✓ No findings found.[/green]")
         return
 
     t = Table(title="🔍 Findings", show_lines=True, header_style="bold cyan")
