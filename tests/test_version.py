@@ -1,6 +1,7 @@
 import importlib.metadata
 import io
 
+import pytest
 from rich.console import Console
 
 import sentinelscan
@@ -31,4 +32,4 @@ def test_version_single_source_of_truth():
         installed_version = importlib.metadata.version("sentinelscan")
         assert installed_version == VERSION
     except importlib.metadata.PackageNotFoundError:
-        pass
+        pytest.skip("package not installed")
