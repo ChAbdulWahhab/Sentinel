@@ -2,6 +2,8 @@ from rich.console import Console
 from rich.align import Align
 from rich.text import Text
 
+from sentinelscan.config import VERSION
+
 BANNER = r"""
    _____            _   _            _  _____
   / ____|          | | (_)          | |/ ____|
@@ -16,6 +18,6 @@ def print_banner(console: Console, no_color: bool = False) -> None:
     style = "bold cyan" if not no_color else None
     console.print(Align.center(Text(BANNER, style=style)))
     console.print(Align.center(
-        Text("  Interactive Security Audit • v0.1.0  ", style="dim"),
+        Text(f"  Interactive Security Audit • v{VERSION}  ", style="dim"),
     ))
     console.print()

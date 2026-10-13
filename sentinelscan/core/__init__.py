@@ -24,4 +24,6 @@ __all__ = [
     "ScanEngine",
 ]
 
-__version__ = "0.1.0"
+from sentinelscan.config import VERSION
+
+__version__ = VERSION

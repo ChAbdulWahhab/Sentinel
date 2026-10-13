@@ -5,7 +5,7 @@ from pathlib import Path
 
 APP_NAME = "SentinelScan"
 VERSION = "0.1.0"
-DEFAULT_UA = "SentinelScan/0.1 (+https://github.com/ChAbdulWahhab/sentinelscan) SelfAudit"
+DEFAULT_UA = f"SentinelScan/{VERSION} (+https://github.com/ChAbdulWahhab/sentinelscan) SelfAudit"
 
 # Report formats jo CLI accept karta hai
 DEFAULT_FORMATS = {

@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "sentinelscan"
-version = "0.1.0"
+dynamic = ["version"]
 description = "Interactive CLI website security self-audit tool"
 readme = "README.md"
 license = { text = "MIT" }
@@ -29,6 +29,9 @@ dev = ["pytest>=8.0", "pytest-asyncio>=0.23", "ruff>=0.4"]
 [project.scripts]
 sentinelscan = "sentinelscan.cli:app"
 sscan = "sentinelscan.cli:app"
+
+[tool.hatch.version]
+path = "sentinelscan/config.py"
 
 [tool.hatch.build.targets.wheel]
 packages = ["sentinelscan"]
