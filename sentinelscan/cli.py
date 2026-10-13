@@ -8,6 +8,18 @@ from typing import Optional
 
 import typer
 from rich.console import Console
+
+if sys.platform == "win32":
+    try:
+        if hasattr(sys.stdout, "reconfigure"):
+            sys.stdout.reconfigure(encoding="utf-8")
+    except (AttributeError, OSError, ValueError):
+        pass
+    try:
+        if hasattr(sys.stderr, "reconfigure"):
+            sys.stderr.reconfigure(encoding="utf-8")
+    except (AttributeError, OSError, ValueError):
+        pass
 from rich.prompt import Confirm, Prompt
 
 from sentinelscan.config import APP_NAME, VERSION, DEFAULT_FORMATS
