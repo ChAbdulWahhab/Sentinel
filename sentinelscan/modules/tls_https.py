@@ -20,9 +20,9 @@ class TlsHttpsModule(BaseModule):
         if self.target.scheme == "http":
             self.add(
                 severity=Severity.HIGH,
-                title="Site HTTPS par nahi hai",
-                detail="Base URL http:// hai.",
-                fix="TLS lagayein (Let's Encrypt) aur 301 redirect to HTTPS.",
+                title="Site does not use HTTPS",
+                detail="Base URL is http://.",
+                fix="Install TLS (Let's Encrypt) and configure a 301 redirect to HTTPS.",
                 url=self.target.base,
                 cwe="CWE-319", owasp="A02:2021",
             )
@@ -36,9 +36,9 @@ class TlsHttpsModule(BaseModule):
             if not (300 <= r.status_code < 400 and loc.startswith("https://")):
                 self.add(
                     severity=Severity.MEDIUM,
-                    title="HTTP se HTTPS redirect nahi",
+                    title="HTTP does not redirect to HTTPS",
                     detail=f"http:// request -> {r.status_code}",
-                    fix="Server par 301 redirect to HTTPS enable karein.",
+                    fix="Enable a 301 redirect to HTTPS on the server.",
                     url=http_url,
                 )
 
@@ -63,7 +63,7 @@ class TlsHttpsModule(BaseModule):
                         cert["notAfter"], "%b %d %H:%M:%S %Y %Z"
                     )
                     days = (exp - datetime.datetime.utcnow()).days
-                    self.ctx["info"]["Certificate expiry"] = f"{exp:%Y-%m-%d} ({days}d baqi)"
+                    self.ctx["info"]["Certificate expiry"] = f"{exp:%Y-%m-%d} ({days}d remaining)"
 
                     subject = dict(x[0] for x in cert.get("subject", []))
                     issuer = dict(x[0] for x in cert.get("issuer", []))
@@ -72,22 +72,22 @@ class TlsHttpsModule(BaseModule):
 
                     if days < 0:
                         self.add(severity=Severity.HIGH,
-                                 title="TLS certificate expire ho chuka",
+                                 title="TLS certificate has expired",
                                  detail=f"Expiry: {exp:%Y-%m-%d}",
-                                 fix="Renew karein.",
+                                 fix="Renew the certificate.",
                                  url=self.target.base)
                     elif days < 15:
                         self.add(severity=Severity.MEDIUM,
-                                 title="TLS certificate jaldi expire",
-                                 detail=f"{days} din baqi",
-                                 fix="Auto-renewal setup karein.",
+                                 title="TLS certificate expires soon",
+                                 detail=f"{days} days remaining",
+                                 fix="Set up auto-renewal.",
                                  url=self.target.base)
 
                     if version in ("TLSv1", "TLSv1.1", "SSLv3"):
                         self.add(severity=Severity.HIGH,
-                                 title="Purana TLS version",
+                                 title="Outdated TLS version",
                                  detail=version,
-                                 fix="Sirf TLS 1.2+ allow karein.",
+                                 fix="Allow only TLS 1.2 or higher.",
                                  url=self.target.base, cwe="CWE-326")
 
                     cipher = ss.cipher()
@@ -106,19 +106,19 @@ class TlsHttpsModule(BaseModule):
             if self._openssl_verifies_ok(host, port):
                 # False positive — Python bundle stale tha, but cert valid hai
                 self.ctx.setdefault("info", {})["TLS note"] = (
-                    "Python default TLS verify fail hua lekin openssl pass — "
-                    "certifi upgrade karein: pip install --upgrade certifi"
+                    "Python default TLS verification failed but OpenSSL passed — "
+                    "upgrade certifi: pip install --upgrade certifi"
                 )
                 # LOW severity me downgrade karo, HIGH me na
                 self.add(
                     severity=Severity.LOW,
-                    title="TLS verification Python me fail (par cert valid hai)",
+                    title="TLS verification failed in Python (certificate is valid)",
                     detail=(
-                        f"Python ka trust bundle stale lagta hai.\n"
+                        f"Python trust bundle appears stale.\n"
                         f"Error: {e}\n"
                         f"openssl verify: OK"
                     ),
-                    fix="`pip install --upgrade certifi` chalao. Actual cert valid hai.",
+                    fix="Run `pip install --upgrade certifi`. The certificate itself is valid.",
                     url=self.target.base,
                 )
             else:
@@ -126,7 +126,7 @@ class TlsHttpsModule(BaseModule):
                     severity=Severity.HIGH,
                     title="TLS certificate invalid",
                     detail=str(e),
-                    fix="Valid CA-signed certificate lagayein.",
+                    fix="Install a valid CA-signed certificate.",
                     url=self.target.base,
                     cwe="CWE-295", owasp="A02:2021",
                 )
@@ -134,10 +134,10 @@ class TlsHttpsModule(BaseModule):
             pass
 
     def _openssl_verifies_ok(self, host: str, port: int) -> bool:
-        """openssl s_client se independent verification.
+        """Independent verification using openssl s_client.
 
-        Agar openssl CLI available nahi hai to False return karo
-        (conservative — HIGH finding suppress na ho).
+        If the openssl CLI is unavailable, return False
+        (conservative — so a HIGH finding is not suppressed).
         """
         if not shutil.which("openssl"):
             return False
