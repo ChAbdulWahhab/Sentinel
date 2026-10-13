@@ -1,8 +1,8 @@
-"""Interactive menu — jab user bina subcommand `sscan` chalao.
+"""Interactive menu — launched when running `sscan` without subcommands.
 
 Usage:
-    $ sscan          -> menu aayega
-    $ sscan scan ... -> seedha scan (menu skip)
+    $ sscan          -> interactive menu
+    $ sscan scan ... -> direct scan (skips menu)
 """
 from __future__ import annotations
 
@@ -24,14 +24,14 @@ console = Console()
 
 # ---------- Menu entries ----------
 MENU_OPTIONS = [
-    ("1", "New Scan",          "Naya target scan karo"),
-    ("2", "View Past Reports", "Reports folder browse karo"),
-    ("3", "List Modules",      "Saare 23 modules dekho"),
-    ("4", "Check Target Health","Sirf headers + TLS + DNS check"),
-    ("5", "Settings",          "Config file / defaults"),
-    ("6", "Legal & Terms",     "Legal disclaimer + usage terms"),
-    ("7", "About",             "Version + credits"),
-    ("0", "Exit",              "Tool band karo"),
+    ("1", "New Scan",          "Scan a new target"),
+    ("2", "View Past Reports", "Browse reports folder"),
+    ("3", "List Modules",      "View all 23 scan modules"),
+    ("4", "Check Target Health","Headers + TLS + DNS checks only"),
+    ("5", "Settings",          "Configuration and defaults"),
+    ("6", "Legal & Terms",     "Legal disclaimer and usage terms"),
+    ("7", "About",             "Version and project credits"),
+    ("0", "Exit",              "Exit application"),
 ]
 
 
@@ -74,7 +74,7 @@ def _menu_new_scan() -> None:
 
     url = Prompt.ask("[bold]Target URL[/bold] (e.g. example.com)").strip()
     if not url:
-        console.print("[yellow]URL empty — cancel.[/yellow]")
+        console.print("[yellow]Target URL cannot be empty — cancelled.[/yellow]")
         return
 
     formats = Prompt.ask(
@@ -94,16 +94,16 @@ def _menu_new_scan() -> None:
 
     # Extra modules filter
     console.print(
-        "\n[dim]Tip: saare 23 modules chalenge. "
-        "Sirf kuch chala ne ke liye `-m` flag CLI me use karo.[/dim]"
+        "\n[dim]Tip: All 23 modules will run. "
+        "To run specific modules, use the `-m` flag in the CLI.[/dim]"
     )
 
     # Authorization
     console.print(
-        f"\n[yellow]⚠️  Legal: sirf [bold]{url}[/bold] ke owner ya "
-        "authorized tester hi scan karein.[/yellow]"
+        f"\n[yellow]⚠️  Legal: Scan only [bold]{url}[/bold] if you own it "
+        "or have explicit written permission.[/yellow]"
     )
-    if not Confirm.ask("Aap authorized hain?", default=False):
+    if not Confirm.ask("Are you authorized to scan this target?", default=False):
         console.print("[red]Cancelled.[/red]")
         return
 
@@ -130,7 +130,7 @@ def _menu_new_scan() -> None:
             no_color=False,
             quiet=False,
             verbose=False,
-            yes=True,   # consent already diya
+            yes=True,   # consent already granted
             config=None,
         )
     except SystemExit:
@@ -145,8 +145,8 @@ def _menu_view_reports() -> None:
     reports_dir = Path("./reports")
     if not reports_dir.exists():
         console.print(
-            "[yellow]`./reports` folder nahi mila.[/yellow]\n"
-            "Pehle ek scan chalao: [cyan]sscan scan example.com[/cyan]"
+            "[yellow]Reports folder `./reports` not found.[/yellow]\n"
+            "Run a scan first: [cyan]sscan scan example.com[/cyan]"
         )
         return
 
@@ -156,7 +156,7 @@ def _menu_view_reports() -> None:
         reverse=True,
     )
     if not files:
-        console.print("[yellow]Reports folder khali hai.[/yellow]")
+        console.print("[yellow]Reports folder is empty.[/yellow]")
         return
 
     t = Table(title=f"Reports ({len(files)})", show_lines=False)
@@ -174,7 +174,7 @@ def _menu_view_reports() -> None:
     console.print(t)
 
     # Optionally open folder
-    if Confirm.ask("Folder kholna chahte ho?", default=False):
+    if Confirm.ask("Do you want to open the reports folder?", default=False):
         _open_folder(reports_dir)
 
 
@@ -190,7 +190,7 @@ def _open_folder(path: Path) -> None:
         else:
             console.print(f"[dim]Path: {path}[/dim]")
     except Exception as e:
-        console.print(f"[yellow]Open fail: {e}[/yellow]")
+        console.print(f"[yellow]Failed to open folder: {e}[/yellow]")
         console.print(f"[dim]Path: {path}[/dim]")
 
 
@@ -211,16 +211,16 @@ def _menu_list_modules() -> None:
 
 def _menu_target_health() -> None:
     console.print("\n[bold cyan]▸ Quick Target Health Check[/bold cyan]\n")
-    console.print("[dim]Sirf headers + TLS + DNS chalenge (~5 sec)[/dim]\n")
+    console.print("[dim]Only headers, TLS, and DNS checks will run (~5 sec)[/dim]\n")
 
     url = Prompt.ask("[bold]Target URL[/bold]").strip()
     if not url:
         return
 
     console.print(
-        f"\n[yellow]⚠️  Authorized testing confirm karein.[/yellow]"
+        f"\n[yellow]⚠️  Please confirm authorized testing.[/yellow]"
     )
-    if not Confirm.ask(f"{url} authorized hai?", default=False):
+    if not Confirm.ask(f"Are you authorized to scan {url}?", default=False):
         console.print("[red]Cancelled.[/red]")
         return
 
@@ -271,8 +271,8 @@ def _menu_settings() -> None:
     console.print(t)
 
     console.print(
-        "\n[dim]Config file abhi implement nahi hui. "
-        "Filhaal CLI flags use karo:[/dim]"
+        "\n[dim]Configuration file is not implemented yet. "
+        "Use CLI flags for now:[/dim]"
     )
     console.print(
         "  [cyan]sscan scan example.com --max-pages 100 --concurrency 5[/cyan]\n"
@@ -286,11 +286,11 @@ def _menu_legal() -> None:
 
     console.print(
         "\n[bold]Usage terms:[/bold]\n"
-        "  • Sirf apni ya authorized websites scan karein\n"
-        "  • Unauthorized scanning illegal hai (IT Act, CFAA, etc.)\n"
-        "  • Reports user ki zimmedari hain — safely store karein\n"
-        "  • Tool 'as-is' provided hai, koi warranty nahi\n"
-        "  • Ethical disclosure follow karein: report bhejo, leak na karo\n"
+        "  • Scan only websites you own or are authorized to test\n"
+        "  • Unauthorized scanning is illegal (IT Act, CFAA, etc.)\n"
+        "  • Reports are the user's responsibility — store them securely\n"
+        "  • Tool is provided 'as-is' without warranty\n"
+        "  • Follow ethical disclosure: report issues to the owner, do not leak them\n"
     )
 
 
@@ -299,7 +299,7 @@ def _menu_about() -> None:
         f"\n[bold cyan]{APP_NAME}[/bold cyan] v{VERSION}\n"
         "[dim]Interactive CLI website security self-audit tool.[/dim]\n\n"
         "Made with Python + Typer + Rich + httpx + dnspython\n"
-        "23 modules — headers, TLS, CORS, DNS, GraphQL, JWT, aur bhi bahut.\n\n"
+        "23 modules — headers, TLS, CORS, DNS, GraphQL, JWT, and more.\n\n"
         "[dim]GitHub: github.com/you/sentinelscan[/dim]"
     )
 
@@ -318,7 +318,7 @@ HANDLERS = {
 
 
 def run_interactive_menu() -> None:
-    """Main loop — menu dikhao, choice lo, handler chalao."""
+    """Main loop — display menu, prompt for choice, invoke handler."""
     print_banner(console)
 
     while True:
@@ -345,7 +345,7 @@ def run_interactive_menu() -> None:
         console.print()
         try:
             Prompt.ask(
-                "[dim]Enter dabao menu pe wapas jaane ke liye[/dim]",
+                "[dim]Press Enter to return to the menu[/dim]",
                 default="",
                 show_default=False,
             )
