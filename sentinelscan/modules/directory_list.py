@@ -27,8 +27,8 @@ class DirectoryListModule(BaseModule):
                 if r is not None and r.status_code == 200 and LISTING_RX.search(r.text):
                     self.add(severity=Severity.MEDIUM,
                              title=f"Directory listing enabled: {d}",
-                             detail=f"{url} par autoindex ON hai.",
-                             fix="Autoindex off karein (nginx: autoindex off; Apache: Options -Indexes).",
+                             detail=f"Directory listing is enabled at {url}.",
+                             fix="Disable directory listing (Nginx: 'autoindex off;', Apache: 'Options -Indexes').",
                              url=url, cwe="CWE-548", owasp="A05:2021")
 
         await asyncio.gather(*(probe(d) for d in DIRS))

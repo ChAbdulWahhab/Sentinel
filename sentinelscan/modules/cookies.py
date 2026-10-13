@@ -45,9 +45,9 @@ class CookiesModule(BaseModule):
             if missing:
                 self.add(
                     severity=Severity.MEDIUM,
-                    title=f"Cookie `{name}` mein flags missing",
+                    title=f"Cookie `{name}` missing security flags",
                     detail="Missing: " + ", ".join(missing),
-                    fix="Set-Cookie mein HttpOnly; Secure; SameSite=Lax/Strict add karein.",
+                    fix="Add HttpOnly, Secure, and SameSite=Lax or Strict flags to Set-Cookie.",
                     url=self.target.base,
                     cwe="CWE-1004", owasp="A05:2021",
                 )
@@ -55,6 +55,6 @@ class CookiesModule(BaseModule):
             # __Host- / __Secure- prefix check
             if name.startswith("__Host-") and ("secure" not in low or "path=/" not in low):
                 self.add(severity=Severity.MEDIUM, title=f"`__Host-` prefix violation: {name}",
-                         detail="Secure + Path=/ dono chahiye.",
-                         fix="Cookie spec follow karein.", url=self.target.base)
+                         detail="__Host- cookies require both the Secure attribute and Path=/.",
+                         fix="Follow the cookie prefix requirements defined in RFC 6265bis.", url=self.target.base)
         return self.findings

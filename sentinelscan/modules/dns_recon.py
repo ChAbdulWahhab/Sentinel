@@ -35,8 +35,8 @@ class DnsReconModule(BaseModule):
             self.add(
                 severity=Severity.MEDIUM,
                 title="SPF record missing",
-                detail=f"{host} ke liye koi SPF TXT record nahi mila.",
-                fix='DNS mein add karein: v=spf1 include:_spf.google.com ~all (apne provider ke hisaab se)',
+                detail=f"No SPF TXT record found for {host}.",
+                fix='Add an SPF TXT record to DNS (e.g., "v=spf1 include:_spf.google.com ~all" tailored to your mail provider).',
             )
 
         # DMARC
@@ -46,7 +46,7 @@ class DnsReconModule(BaseModule):
             self.add(
                 severity=Severity.MEDIUM,
                 title="DMARC record missing",
-                detail=f"_dmarc.{host} par koi record nahi.",
+                detail=f"No DMARC TXT record found at _dmarc.{host}.",
                 fix="v=DMARC1; p=quarantine; rua=mailto:dmarc@" + host,
             )
         elif "p=none" in dmarc_val:
@@ -54,7 +54,7 @@ class DnsReconModule(BaseModule):
                 severity=Severity.LOW,
                 title="DMARC policy weak (p=none)",
                 detail=dmarc_val,
-                fix="p=quarantine ya p=reject par move karein.",
+                fix="Enforce DMARC by upgrading policy from 'p=none' to 'p=quarantine' or 'p=reject'.",
             )
 
         # MX
@@ -71,6 +71,6 @@ class DnsReconModule(BaseModule):
         # Zone transfer attempt (safe, fail-fast)
         ns = await safe(host, "NS")
         if ns:
-            self.ctx.setdefault("info", {})["Zone transfer attempt"] = "NS mila — manually test karein"
+            self.ctx.setdefault("info", {})["Zone transfer attempt"] = "NS records identified — test zone transfer manually."
 
         return self.findings

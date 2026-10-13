@@ -43,22 +43,22 @@ class CspAnalyzerModule(BaseModule):
                 self.add(severity=Severity.MEDIUM if d in ("script-src", "object-src") else Severity.LOW,
                          title=f"CSP directive missing: {d}",
                          detail=csp[:200],
-                         fix=f"{d} add karein.",
+                         fix=f"Define the '{d}' directive in Content-Security-Policy.",
                          url=self.target.base)
 
         for token, (sev, msg) in DANGEROUS.items():
             if token in csp:
                 self.add(
                     severity=getattr(Severity, sev),
-                    title=f"CSP me dangerous token: {token}",
+                    title=f"Dangerous CSP token: {token}",
                     detail=msg,
-                    fix="Nonce/hash based CSP use karein.",
+                    fix="Implement a strict nonce- or hash-based Content-Security-Policy.",
                     url=self.target.base, cwe="CWE-1021",
                 )
 
         if "object-src" in directives and "'none'" not in directives["object-src"]:
-            self.add(severity=Severity.LOW, title="object-src 'none' nahi hai",
+            self.add(severity=Severity.LOW, title="CSP object-src is not set to 'none'",
                      detail=str(directives["object-src"]),
-                     fix="object-src 'none' set karein.",
+                     fix="Set the 'object-src' directive to 'none' to block plugin execution.",
                      url=self.target.base)
         return self.findings
