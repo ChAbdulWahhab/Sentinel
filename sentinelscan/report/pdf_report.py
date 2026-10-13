@@ -18,7 +18,7 @@ class PdfReporter(BaseReporter):
             from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
             from reportlab.lib import colors
         except ImportError:
-            raise RuntimeError("PDF ke liye: pip install reportlab")
+            raise RuntimeError("PDF output requires reportlab: pip install reportlab")
 
         styles = getSampleStyleSheet()
         doc = SimpleDocTemplate(str(path), pagesize=A4,

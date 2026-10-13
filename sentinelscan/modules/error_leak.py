@@ -33,7 +33,7 @@ ERROR_PATTERNS = [
 
 class ErrorLeakModule(BaseModule):
     name = "error_leak"
-    description = "Error page se internal info leak"
+    description = "Internal information leakage in error pages"
 
     async def run(self):
         probes = [

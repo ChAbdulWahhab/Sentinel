@@ -14,7 +14,7 @@ JWT_RX = re.compile(r"eyJ[A-Za-z0-9_\-]+\.eyJ[A-Za-z0-9_\-]+\.[A-Za-z0-9_\-]*")
 
 class JwtProbeModule(BaseModule):
     name = "jwt_probe"
-    description = "JWT tokens detect karo + 'none' alg test"
+    description = "JWT token detection and 'none' algorithm test"
     requires_crawl = True
 
     async def run(self):
