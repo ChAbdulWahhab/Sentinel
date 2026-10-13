@@ -20,14 +20,14 @@ class HttpMethodsModule(BaseModule):
                     self.add(severity=Severity.LOW,
                              title="Risky HTTP methods allowed",
                              detail=allow,
-                             fix="Unnecessary methods disable karein (nginx: if ($request_method !~ ^(GET|POST|HEAD)$)).",
+                             fix="Disable unnecessary methods (nginx: if ($request_method !~ ^(GET|POST|HEAD)$)).",
                              url=self.target.root)
 
         r = await self.session.request("TRACE", self.target.root)
         if r is not None and r.status_code == 200 and "TRACE" in r.text:
             self.add(severity=Severity.MEDIUM,
                      title="HTTP TRACE enabled",
-                     detail="Server request echo kar raha (XST risk).",
+                     detail="The server echoes the request back (XST risk).",
                      fix="TraceEnable off (Apache) / disable TRACE (nginx).",
                      url=self.target.root, cwe="CWE-693")
 
@@ -39,6 +39,6 @@ class HttpMethodsModule(BaseModule):
                 self.add(severity=Severity.HIGH,
                          title=f"HTTP {method} allowed",
                          detail=f"Status {r.status_code} — file create/delete possible.",
-                         fix=f"{method} disable karein.",
+                         fix=f"Disable the {method} method.",
                          url=self.target.root, cwe="CWE-650")
         return self.findings

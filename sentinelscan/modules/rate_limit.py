@@ -49,19 +49,19 @@ class RateLimitModule(BaseModule):
         if first_block:
             info["Rate limiter"] = f"Detected at request #{first_block}"
         elif rl_headers:
-            info["Rate limiter"] = "Headers mile, block nahi hua"
+            info["Rate limiter"] = "Headers found, no request was blocked"
         else:
             self.add(severity=Severity.MEDIUM,
-                     title="Rate limiter detect nahi hua",
-                     detail=f"{n} tez requests par koi 429 / header nahi aaya (homepage only).",
-                     fix="Login/register/OTP/API par throttle lagayein (nginx limit_req, Cloudflare, Laravel throttle, express-rate-limit).",
+                     title="Rate limiter not detected",
+                     detail=f"No 429 or header was received across {n} rapid requests (homepage only).",
+                     fix="Apply throttling to login/register/OTP/API endpoints (nginx limit_req, Cloudflare, Laravel throttle, express-rate-limit).",
                      url=url, owasp="A04:2021")
-            info["Rate limiter"] = "Detect nahi hua"
+            info["Rate limiter"] = "Not detected"
 
         if any("login" in u.lower() or "auth" in u.lower() for u in list(self.ctx.get("pages", {}))):
             self.add(severity=Severity.INFO,
-                     title="Login/auth endpoints mile",
-                     detail="Brute-force protection verify karein (lockout, CAPTCHA, 2FA).",
-                     fix="Manual test staging mein.",
+                     title="Login/auth endpoints found",
+                     detail="Verify brute-force protection (lockout, CAPTCHA, 2FA).",
+                     fix="Test manually in staging.",
                      url=url)
         return self.findings

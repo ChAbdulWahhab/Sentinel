@@ -84,9 +84,9 @@ class JwtProbeModule(BaseModule):
         if alg == "none":
             self.add(
                 severity=Severity.HIGH,
-                title="JWT 'alg: none' mila",
+                title="JWT 'alg: none' found",
                 detail=f"Source: {source}\nHeader: {header}",
-                fix="Server-side JWT verify karein aur alg allowlist rakhein (RS256/HS256).",
+                fix="Verify JWTs on the server and keep an algorithm allowlist (RS256/HS256).",
                 url=source, cwe="CWE-347", owasp="A02:2021",
             )
         elif alg == "hs256":
@@ -94,6 +94,6 @@ class JwtProbeModule(BaseModule):
                 severity=Severity.INFO,
                 title="HS256 JWT detected",
                 detail=f"Source: {source}",
-                fix="Weak secret use na karein; brute-force test karein staging mein.",
+                fix="Do not use weak secrets; run brute-force tests in staging.",
                 url=source,
             )

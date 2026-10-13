@@ -35,7 +35,7 @@ class OpenRedirectModule(BaseModule):
                         self.add(severity=Severity.MEDIUM,
                                  title=f"Open redirect: `{param}` param",
                                  detail=f"{new_url}\n-> {loc}",
-                                 fix="Redirect target ko allowlist karein.",
+                                 fix="Validate redirect targets against an allowlist.",
                                  url=page, cwe="CWE-601", owasp="A01:2021")
                         return self.findings
         return self.findings

@@ -55,7 +55,7 @@ class JsAnalysisModule(BaseModule):
                             severity=Severity.HIGH if kind in ("AWS Access Key", "Private Key", "Stripe Live Key", "GitHub PAT") else Severity.MEDIUM,
                             title=f"Possible hardcoded {kind} in JS",
                             detail=f"File: {js}\nMatch: {val[:80]}...",
-                            fix="Secrets frontend me na rakhein; server-side env use karein.",
+                            fix="Do not store secrets in frontend code; use server-side environment variables.",
                             url=js, cwe="CWE-798", owasp="A05:2021",
                             evidence=val[:200],
                         )
