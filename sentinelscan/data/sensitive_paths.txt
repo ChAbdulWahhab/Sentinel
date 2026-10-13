@@ -1,0 +1,9 @@
+# Extra paths (ye file user edit kar sakta hai)
+/.env
+/.git/HEAD
+/.git/config
+/swagger
+/openapi.json
+/actuator
+/actuator/env
+/phpinfo.php

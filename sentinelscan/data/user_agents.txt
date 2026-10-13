@@ -1,0 +1,2 @@
+SentinelScan/0.1 SelfAudit
+Mozilla/5.0 (compatible; SentinelScan/0.1; +https://example.com/bot)

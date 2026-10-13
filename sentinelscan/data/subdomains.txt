@@ -1,0 +1,14 @@
+www
+api
+app
+admin
+dev
+staging
+test
+cdn
+static
+mail
+vpn
+git
+jenkins
+grafana
