@@ -34,7 +34,7 @@ from sentinelscan.utils.logger import setup_logger
 app = typer.Typer(
     name="sentinelscan",
     help="🛡️ Interactive website security self-audit tool.",
-    no_args_is_help=True,
+    no_args_is_help=False,
     rich_markup_mode="rich",
 )
 console = Console()
@@ -64,10 +64,14 @@ def main_callback(
         typer.echo(f"{APP_NAME} v{VERSION}")
         raise typer.Exit(0)
 
-    # No subcommand given -> interactive menu
+    # No subcommand given -> interactive menu if TTY, else help
     if ctx.invoked_subcommand is None:
-        from sentinelscan.ui.menu import run_interactive_menu
-        run_interactive_menu()
+        if sys.stdout.isatty():
+            from sentinelscan.ui.menu import run_interactive_menu
+            run_interactive_menu()
+        else:
+            typer.echo(ctx.get_help())
+            raise typer.Exit(0)
 
 
 @app.command()
