@@ -26,9 +26,9 @@ class RobotsSitemapModule(BaseModule):
             sensitive = [d for d in dis if re.search(r"admin|backup|private|internal|secret|config|\.env|\.git", d, re.I)]
             if sensitive:
                 self.add(severity=Severity.LOW,
-                         title="robots.txt sensitive paths reveal kar raha",
+                         title="robots.txt reveals sensitive paths",
                          detail=", ".join(sensitive[:10]),
-                         fix="Sensitive paths robots.txt me na likhein; access control se protect karein.",
+                         fix="Do not list sensitive paths in robots.txt; protect them with access control.",
                          url=self.target.base + "/robots.txt")
 
         r = await self.session.get(self.target.base + "/sitemap.xml")

@@ -79,7 +79,7 @@ class SensitivePathsModule(BaseModule):
                             severity=Severity.CRITICAL,
                             title=f"Sensitive path accessible: {path}",
                             detail=f"HTTP 200 — {len(r.content)} bytes",
-                            fix="Web root se hatao ya server config me block karo.",
+                            fix="Remove from the web root or block access in the server configuration.",
                             url=url,
                             evidence=body[:300] if body else None,
                             owasp="A05:2021",
@@ -105,13 +105,13 @@ class SensitivePathsModule(BaseModule):
             self.add(severity=Severity.MEDIUM,
                      title="API documentation public",
                      detail=", ".join(docs),
-                     fix="Production mein docs auth ke peeche rakhein.",
+                     fix="Require authentication for documentation in production.",
                      url=self.target.base)
 
         if any(p in interesting_200 for p in ("/admin", "/admin/", "/phpmyadmin/", "/administrator")):
             self.add(severity=Severity.MEDIUM,
                      title="Admin panel publicly reachable",
-                     detail="Admin/phpMyAdmin 200 de raha hai.",
+                     detail="Admin/phpMyAdmin returns HTTP 200.",
                      fix="IP allowlist / VPN / 2FA.",
                      url=self.target.base)
         return self.findings

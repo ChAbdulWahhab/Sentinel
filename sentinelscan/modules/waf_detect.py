@@ -43,7 +43,7 @@ class WafDetectModule(BaseModule):
                 severity=Severity.INFO,
                 title="WAF / CDN detected",
                 detail=", ".join(sorted(detected)),
-                fix="WAF rules review karein; bypass test staging mein karein.",
+                fix="Review WAF rules; perform bypass testing in staging.",
                 url=self.target.base,
             )
         return self.findings

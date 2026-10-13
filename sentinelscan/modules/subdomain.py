@@ -57,6 +57,6 @@ class SubdomainModule(BaseModule):
                     self.add(severity=Severity.INFO,
                              title=f"Non-prod subdomain: {fqdn}",
                              detail=f"IP: {ip}",
-                             fix="Non-prod environments ko auth ke peeche rakhein.",
+                             fix="Keep non-production environments behind authentication.",
                              url=f"https://{fqdn}")
         return self.findings

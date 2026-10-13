@@ -47,8 +47,8 @@ class SqliHeuristicModule(BaseModule):
                             self.add(
                                 severity=Severity.HIGH,
                                 title=f"Possible SQLi: `{param}` param",
-                                detail=f"Payload `{pl}` ne DB error trigger kiya: `{m.group(0)[:80]}`",
-                                fix="Parameterized queries / prepared statements use karein. Manually verify karein.",
+                                detail=f"Payload `{pl}` triggered a database error: `{m.group(0)[:80]}`",
+                                fix="Use parameterized queries or prepared statements. Verify manually.",
                                 url=page, cwe="CWE-89", owasp="A03:2021",
                                 evidence=r.text[max(0,m.start()-50):m.end()+150],
                             )
