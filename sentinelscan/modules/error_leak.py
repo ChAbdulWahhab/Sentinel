@@ -55,8 +55,8 @@ class ErrorLeakModule(BaseModule):
                     self.add(
                         severity=Severity.HIGH,
                         title="Error page internal info leak",
-                        detail=f"Path `{p}` par `{m.group(0)[:80]}` mila (HTTP {r.status_code})",
-                        fix="Production me debug off karein aur custom error pages lagayein.",
+                        detail=f"Found `{m.group(0)[:80]}` at path `{p}` (HTTP {r.status_code})",
+                        fix="Disable debug mode in production and configure custom error pages.",
                         url=self.target.base + p,
                         evidence=r.text[max(0, m.start()-80):m.end()+120],
                         cwe="CWE-209", owasp="A04:2021",

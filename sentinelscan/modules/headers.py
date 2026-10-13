@@ -7,18 +7,18 @@ from sentinelscan.modules.base import BaseModule
 SECURITY_HEADERS = {
     "Strict-Transport-Security": (
         Severity.HIGH,
-        "HSTS missing — browser ko HTTPS force nahi kar raha.",
+        "HSTS missing — browser is not forced to use HTTPS.",
         "Strict-Transport-Security: max-age=31536000; includeSubDomains; preload",
         "CWE-319", "A02:2021",
     ),
     "Content-Security-Policy": (
-        Severity.HIGH, "CSP missing — XSS impact zyada.",
+        Severity.HIGH, "CSP missing — higher XSS impact.",
         "Content-Security-Policy: default-src 'self'; object-src 'none'; base-uri 'self'",
         "CWE-1021", "A05:2021",
     ),
     "X-Frame-Options": (
         Severity.MEDIUM, "Clickjacking protection missing.",
-        "X-Frame-Options: DENY (ya CSP frame-ancestors 'none')",
+        "X-Frame-Options: DENY (or CSP frame-ancestors 'none')",
         "CWE-1021", "A05:2021",
     ),
     "X-Content-Type-Options": (
@@ -79,7 +79,7 @@ class HeadersModule(BaseModule):
                     severity=Severity.LOW,
                     title=f"Info leak header: {leak}",
                     detail=f"`{leak}: {h[leak]}`",
-                    fix="Version info strip karein / generic rakhein.",
+                    fix="Remove version information or keep it generic.",
                     url=self.target.base,
                 )
 
@@ -88,25 +88,25 @@ class HeadersModule(BaseModule):
             if "'unsafe-inline'" in csp or "'unsafe-eval'" in csp:
                 self.add(
                     severity=Severity.LOW,
-                    title="CSP mein unsafe-inline / unsafe-eval",
+                    title="CSP contains unsafe-inline / unsafe-eval",
                     detail=csp[:200],
-                    fix="Nonce/hash-based CSP use karein.",
+                    fix="Use nonce- or hash-based CSP.",
                     url=self.target.base, owasp="A05:2021",
                 )
             if "*" in csp and "default-src" in csp:
                 self.add(
                     severity=Severity.MEDIUM,
-                    title="CSP wildcard (*) allow kar raha hai",
+                    title="CSP allows wildcard (*)",
                     detail=csp[:200],
-                    fix="Explicit allowlist rakhein.",
+                    fix="Use an explicit allowlist.",
                     url=self.target.base,
                 )
             if "report-uri" not in csp and "report-to" not in csp:
                 self.add(
                     severity=Severity.INFO,
                     title="CSP reporting endpoint missing",
-                    detail="CSP violations report nahi ho rahe.",
-                    fix="report-to / report-uri add karein.",
+                    detail="CSP violations are not being reported.",
+                    fix="Add report-to / report-uri.",
                     url=self.target.base,
                 )
         return self.findings

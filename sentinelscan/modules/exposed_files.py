@@ -43,7 +43,7 @@ class ExposedFilesModule(BaseModule):
                     self.add(severity=sev,
                              title=f"Exposed file: {p}",
                              detail=f"HTTP 200 — {len(r.content)} bytes",
-                             fix="File ko web root se hatao / server config me deny karo.",
+                             fix="Remove the file from the web root or deny access to it in the server configuration.",
                              url=url, owasp="A05:2021")
 
         await asyncio.gather(*(probe(p) for p in FILES))

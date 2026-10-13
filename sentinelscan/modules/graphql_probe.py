@@ -21,8 +21,8 @@ class GraphqlProbeModule(BaseModule):
                 self.add(
                     severity=Severity.MEDIUM,
                     title=f"GraphQL introspection enabled: {path}",
-                    detail=f"{url} ne poora schema return kiya.",
-                    fix="Production mein introspection disable karein; depth + cost limit lagayein.",
+                    detail=f"{url} returned the full schema.",
+                    fix="Disable introspection in production; implement query depth and cost limits.",
                     url=url, owasp="A05:2021",
                 )
             # GraphiQL IDE
@@ -32,7 +32,7 @@ class GraphqlProbeModule(BaseModule):
                     severity=Severity.MEDIUM,
                     title=f"GraphiQL IDE public: {path}",
                     detail="Browser-based IDE accessible.",
-                    fix="Auth ke peeche rakhein.",
+                    fix="Place the GraphQL IDE behind authentication.",
                     url=url,
                 )
         return self.findings

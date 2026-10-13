@@ -23,23 +23,23 @@ class FormsCsrfModule(BaseModule):
 
             if f["method"] == "POST" and not has_csrf:
                 self.add(severity=Severity.MEDIUM,
-                         title=f"POST form me CSRF token missing ({page})",
+                         title=f"CSRF token missing in POST form ({page})",
                          detail=f"action=`{f['action'] or '(same page)'}`",
-                         fix="CSRF token / SameSite cookies / Origin check lagayein.",
+                         fix="Implement CSRF tokens, SameSite cookies, or Origin header checks.",
                          url=page, cwe="CWE-352", owasp="A01:2021")
 
             if has_pw and self.target.scheme != "https":
                 self.add(severity=Severity.HIGH,
-                         title="Password form HTTP par",
+                         title="Password form served over HTTP",
                          detail=page,
-                         fix="HTTPS enforce karein.",
+                         fix="Enforce HTTPS.",
                          url=page, cwe="CWE-319")
 
             if has_pw and f["method"] == "GET":
                 self.add(severity=Severity.HIGH,
-                         title="Password form GET method use kar raha",
+                         title="Password form uses GET method",
                          detail=page,
-                         fix="POST use karein.",
+                         fix="Use the POST method.",
                          url=page, cwe="CWE-598")
 
             # autocomplete check
