@@ -37,10 +37,10 @@ MENU_OPTIONS = [
 
 # ---------- Rendering ----------
 def _render_menu() -> None:
-    t = Table(show_header=False, box=None, padding=(0, 2))
-    t.add_column("Key", style="bold cyan", width=4, justify="right")
-    t.add_column("Option", style="bold white", width=24)
-    t.add_column("Description", style="dim")
+    t = Table(show_header=False, box=None, padding=(0, 2), expand=True)
+    t.add_column("Key", style="bold cyan", width=4, justify="right", no_wrap=True)
+    t.add_column("Option", style="bold white", min_width=18, max_width=24, no_wrap=False, overflow="fold")
+    t.add_column("Description", style="dim", overflow="fold", no_wrap=False, ratio=1)
     for key, label, desc in MENU_OPTIONS:
         t.add_row(f"[{key}]", label, desc)
 
@@ -51,6 +51,7 @@ def _render_menu() -> None:
             title=f"[bold cyan]{APP_NAME}[/bold cyan] v{VERSION}",
             border_style="cyan",
             padding=(1, 2),
+            expand=True,
         )
     )
 
@@ -160,11 +161,11 @@ def _menu_view_reports() -> None:
         console.print("[yellow]Reports folder is empty.[/yellow]")
         return
 
-    t = Table(title=f"Reports ({len(files)})", show_lines=False)
-    t.add_column("#", width=4, justify="right", style="dim")
-    t.add_column("Name", style="cyan", overflow="fold")
-    t.add_column("Size", justify="right", style="dim")
-    t.add_column("Modified", style="dim")
+    t = Table(title=f"Reports ({len(files)})", show_lines=False, expand=True)
+    t.add_column("#", width=4, justify="right", style="dim", no_wrap=True)
+    t.add_column("Name", style="cyan", overflow="fold", no_wrap=False, ratio=3)
+    t.add_column("Size", justify="right", style="dim", no_wrap=True, min_width=6, max_width=10)
+    t.add_column("Modified", style="dim", no_wrap=True, min_width=16, max_width=18)
 
     for i, f in enumerate(files[:30], 1):
         import datetime as _dt
@@ -199,10 +200,10 @@ def _menu_list_modules() -> None:
     console.print("\n[bold cyan]▸ Available Modules[/bold cyan]\n")
     from veylance.modules import ALL_MODULES
 
-    t = Table(title=f"{len(ALL_MODULES)} Modules", show_lines=False)
-    t.add_column("Name", style="cyan", no_wrap=True)
-    t.add_column("Description", style="white")
-    t.add_column("Crawl", justify="center", style="dim", width=6)
+    t = Table(title=f"{len(ALL_MODULES)} Modules", show_lines=False, expand=True)
+    t.add_column("Name", style="cyan", no_wrap=True, min_width=12, max_width=20)
+    t.add_column("Description", style="white", overflow="fold", no_wrap=False, ratio=1)
+    t.add_column("Crawl", justify="center", style="dim", width=6, no_wrap=True)
 
     for name, cls in sorted(ALL_MODULES.items()):
         crawl = "yes" if getattr(cls, "requires_crawl", False) else "-"
@@ -264,9 +265,9 @@ def _menu_settings() -> None:
 
     config_file = CONFIG_DIR / "config.toml"
 
-    t = Table(show_header=False, box=None, padding=(0, 2))
-    t.add_column("Key", style="bold")
-    t.add_column("Value", style="dim")
+    t = Table(show_header=False, box=None, padding=(0, 2), expand=True)
+    t.add_column("Key", style="bold", min_width=12, max_width=16, no_wrap=True)
+    t.add_column("Value", style="dim", overflow="fold", no_wrap=False, ratio=1)
     t.add_row("Config dir", str(CONFIG_DIR))
     t.add_row("Config file", str(config_file))
     t.add_row("Reports dir", str(Path("./reports").resolve()))
@@ -284,7 +285,7 @@ def _menu_settings() -> None:
 
 def _menu_legal() -> None:
     console.print("\n[bold cyan]▸ Legal & Terms[/bold cyan]\n")
-    console.print(Panel(LEGAL_NOTICE, border_style="yellow", title="⚖️  Legal Notice"))
+    console.print(Panel(LEGAL_NOTICE, border_style="yellow", title="⚖️  Legal Notice", expand=True))
 
     console.print(
         "\n[bold]Usage terms:[/bold]\n"

@@ -300,9 +300,9 @@ def modules_list() -> None:
     """List available scan modules."""
     from veylance.modules import ALL_MODULES
     from rich.table import Table
-    t = Table(title="Available Modules", show_lines=False)
-    t.add_column("Name", style="cyan", no_wrap=True)
-    t.add_column("Description", style="white")
+    t = Table(title="Available Modules", show_lines=False, expand=True)
+    t.add_column("Name", style="cyan", no_wrap=True, min_width=12, max_width=20)
+    t.add_column("Description", style="white", overflow="fold", no_wrap=False, ratio=1)
     for name, cls in sorted(ALL_MODULES.items()):
         t.add_row(name, cls.description)
     console.print(t)
