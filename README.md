@@ -22,11 +22,17 @@
 
 ## Installation
 
-### Option 1: Native Installation Script (Linux & macOS)
+### Option 1: Quick Install Scripts
 
-```bash
-curl -sSL https://raw.githubusercontent.com/ChAbdulWahhab/veylance/main/install.sh | bash
-```
+- **Linux & macOS (Bash):**
+  ```bash
+  curl -sSL https://raw.githubusercontent.com/ChAbdulWahhab/veylance/main/install.sh | bash
+  ```
+
+- **Windows (PowerShell):**
+  ```powershell
+  irm https://raw.githubusercontent.com/ChAbdulWahhab/veylance/main/install.ps1 | iex
+  ```
 
 ### Option 2: Python Environment (pip)
 
@@ -46,7 +52,7 @@ pip install -e ".[dev,pdf]"
 Download self-contained binaries and cryptographic checksums directly from [GitHub Releases](https://github.com/ChAbdulWahhab/veylance/releases):
 - **Linux:** `veyl-linux-amd64`, `veyl-linux-arm64`
 - **macOS:** `veyl-darwin-amd64` (Intel), `veyl-darwin-arm64` (Apple Silicon)
-- **Windows:** `veyl-windows-amd64.exe`
+- **Windows:** `veyl-windows-amd64.exe`, `veyl-windows-amd64.zip`
 
 ### Option 4: Package Managers
 
