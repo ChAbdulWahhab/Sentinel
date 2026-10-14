@@ -31,3 +31,24 @@ def test_help_windows_encoding():
     )
     assert result.returncode == 0
     assert "Interactive website security self-audit tool" in result.stdout
+
+
+def test_cli_scan_direct_call_no_optioninfo_error():
+    from veylance.cli import scan as scan_cmd
+    import typer
+    import pytest
+
+    # Calling scan_cmd directly without specifying i_own_this should not crash with OptionInfo AttributeError
+    try:
+        scan_cmd(
+            url="https://example.com",
+            modules="headers",
+            concurrency=1,
+            rate=1,
+            max_pages=1,
+            yes=True,
+        )
+    except typer.Exit:
+        pass
+    except AttributeError as e:
+        pytest.fail(f"Raised OptionInfo AttributeError: {e}")

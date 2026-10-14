@@ -131,6 +131,7 @@ def _menu_new_scan() -> None:
             quiet=False,
             verbose=False,
             yes=True,   # consent already granted
+            i_own_this=None,
             config=None,
         )
     except SystemExit:
@@ -247,6 +248,7 @@ def _menu_target_health() -> None:
             quiet=False,
             verbose=False,
             yes=True,
+            i_own_this=None,
             config=None,
         )
     except SystemExit:

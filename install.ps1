@@ -22,6 +22,9 @@ Write-Host "[*] Detected platform: Windows (amd64)" -ForegroundColor Cyan
 
 # 2. Determine Version
 $version = $null
+$defaultVersion = "v0.1.0"
+$directFallbackUrl = "https://github.com/$repo/releases/download/$defaultVersion/veyl-windows-amd64.zip"
+
 if ($env:VERSION) {
     $version = $env:VERSION.Trim()
 } else {
@@ -38,8 +41,8 @@ if ($env:VERSION) {
 }
 
 if ([string]::IsNullOrWhiteSpace($version)) {
-    $version = "v0.1.0"
-    Write-Warning "[!] No release found via GitHub API. Falling back to default version $version"
+    $version = $defaultVersion
+    Write-Warning "[!] No release found via GitHub API. Falling back to direct static release URL: $directFallbackUrl"
 }
 
 if (-not $version.StartsWith("v", [System.StringComparison]::OrdinalIgnoreCase)) {
@@ -59,7 +62,16 @@ try {
 
     # 3. Download Archive & Checksums
     Write-Host "[*] Downloading Veylance $version ($assetName)..." -ForegroundColor Cyan
-    Invoke-WebRequest -Uri $downloadUrl -OutFile $zipPath -UseBasicParsing
+    try {
+        Invoke-WebRequest -Uri $downloadUrl -OutFile $zipPath -UseBasicParsing -ErrorAction Stop
+    } catch {
+        if ($downloadUrl -ne $directFallbackUrl) {
+            Write-Warning "[!] Primary download URL failed. Falling back to direct static URL: $directFallbackUrl"
+            Invoke-WebRequest -Uri $directFallbackUrl -OutFile $zipPath -UseBasicParsing -ErrorAction Stop
+        } else {
+            throw $_
+        }
+    }
 
     try {
         Invoke-WebRequest -Uri $checksumUrl -OutFile $sumsPath -UseBasicParsing -ErrorAction SilentlyContinue

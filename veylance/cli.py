@@ -114,6 +114,33 @@ def scan(
     config: Optional[Path] = typer.Option(None, "--config", help="TOML config file"),
 ) -> None:
     """Run a security audit against a target URL."""
+    # Defensively unwrap any Typer OptionInfo objects if called directly in Python
+    def _unwrap(val, fallback=None):
+        if hasattr(val, "default"):
+            return fallback if val.default is ... else val.default
+        return val
+
+    output = Path(_unwrap(output, "./reports"))
+    formats = str(_unwrap(formats, "markdown,json,html"))
+    modules = _unwrap(modules, None)
+    exclude = _unwrap(exclude, None)
+    max_pages = int(_unwrap(max_pages, 40))
+    concurrency = int(_unwrap(concurrency, 10))
+    rate = int(_unwrap(rate, 20))
+    timeout = int(_unwrap(timeout, 10))
+    insecure = bool(_unwrap(insecure, False))
+    proxy = _unwrap(proxy, None)
+    user_agent = _unwrap(user_agent, None)
+    cookie = _unwrap(cookie, None)
+    header = _unwrap(header, None)
+    interactive = bool(_unwrap(interactive, False))
+    no_color = bool(_unwrap(no_color, False))
+    quiet = bool(_unwrap(quiet, False))
+    verbose = bool(_unwrap(verbose, False))
+    yes = bool(_unwrap(yes, False))
+    i_own_this = _unwrap(i_own_this, None)
+    config = _unwrap(config, None)
+
     print_banner(console, no_color=no_color)
     setup_logger(verbose=verbose, quiet=quiet)
 
@@ -129,7 +156,7 @@ def scan(
     from veylance.utils.audit import log_audit_event
 
     auth_method = "none"
-    if i_own_this:
+    if i_own_this and isinstance(i_own_this, str):
         declared = i_own_this.strip().lower()
         host = target.host.lower()
         if declared == host or host.endswith("." + declared):
