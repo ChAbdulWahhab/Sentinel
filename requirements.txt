@@ -1,4 +1,4 @@
-# SentinelScan - Runtime Dependencies
+# Veylance - Runtime Dependencies
 # Python >= 3.10 required
 
 # --- CLI / UI ---

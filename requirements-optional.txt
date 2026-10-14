@@ -1,4 +1,4 @@
-# SentinelScan - Optional Extras
+# Veylance - Optional Extras
 -r requirements.txt
 
 # PDF reports

@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
-# SentinelScan (sscan) Unix Installation Script
+# Veylance (veyl) Unix Installation Script
 # Supports Linux and macOS on x86_64 and arm64 architectures.
 
 set -euo pipefail
 
 REPO="ChAbdulWahhab/Sentinel"
-INSTALL_DIR="${SENTINELSCAN_INSTALL_DIR:-/usr/local/bin}"
+INSTALL_DIR="${VEYLANCE_INSTALL_DIR:-/usr/local/bin}"
 
 # 1. Detect Operating System
 OS="$(uname -s)"
@@ -29,7 +29,7 @@ case "${ARCH}" in
         ;;
 esac
 
-TARGET="sscan-${PLATFORM}-${ARCH}"
+TARGET="veyl-${PLATFORM}-${ARCH}"
 echo "[*] Detected platform: ${PLATFORM} (${ARCH})"
 
 # 3. Determine Version & Download URL
@@ -42,21 +42,21 @@ if [ -z "${VERSION:-}" ]; then
     fi
 fi
 
-DOWNLOAD_URL="https://github.com/repos/${REPO}/releases/download/${VERSION}/${TARGET}"
-CHECKSUMS_URL="https://github.com/repos/${REPO}/releases/download/${VERSION}/SHA256SUMS.txt"
+DOWNLOAD_URL="https://github.com/${REPO}/releases/download/${VERSION}/${TARGET}"
+CHECKSUMS_URL="https://github.com/${REPO}/releases/download/${VERSION}/SHA256SUMS.txt"
 
 TMP_DIR="$(mktemp -d)"
 trap 'rm -rf "${TMP_DIR}"' EXIT
 
-echo "[*] Downloading SentinelScan ${VERSION} (${TARGET})..."
+echo "[*] Downloading Veylance ${VERSION} (${TARGET})..."
 if command -v curl >/dev/null 2>&1; then
-    curl -fSL "${DOWNLOAD_URL}" -o "${TMP_DIR}/sscan"
+    curl -fSL "${DOWNLOAD_URL}" -o "${TMP_DIR}/veyl"
     curl -fSL "${CHECKSUMS_URL}" -o "${TMP_DIR}/SHA256SUMS.txt" || true
 elif command -v wget >/dev/null 2>&1; then
-    wget -q "${DOWNLOAD_URL}" -O "${TMP_DIR}/sscan"
+    wget -q "${DOWNLOAD_URL}" -O "${TMP_DIR}/veyl"
     wget -q "${CHECKSUMS_URL}" -O "${TMP_DIR}/SHA256SUMS.txt" || true
 else
-    echo "[-] Error: curl or wget is required to download SentinelScan."
+    echo "[-] Error: curl or wget is required to download Veylance."
     exit 1
 fi
 
@@ -65,9 +65,9 @@ if [ -f "${TMP_DIR}/SHA256SUMS.txt" ] && grep -q "${TARGET}" "${TMP_DIR}/SHA256S
     echo "[*] Verifying SHA256 checksum..."
     EXPECTED_HASH="$(grep "${TARGET}" "${TMP_DIR}/SHA256SUMS.txt" | awk '{print $1}')"
     if command -v sha256sum >/dev/null 2>&1; then
-        ACTUAL_HASH="$(sha256sum "${TMP_DIR}/sscan" | awk '{print $1}')"
+        ACTUAL_HASH="$(sha256sum "${TMP_DIR}/veyl" | awk '{print $1}')"
     elif command -v shasum >/dev/null 2>&1; then
-        ACTUAL_HASH="$(shasum -a 256 "${TMP_DIR}/sscan" | awk '{print $1}')"
+        ACTUAL_HASH="$(shasum -a 256 "${TMP_DIR}/veyl" | awk '{print $1}')"
     else
         ACTUAL_HASH=""
     fi
@@ -81,7 +81,7 @@ if [ -f "${TMP_DIR}/SHA256SUMS.txt" ] && grep -q "${TARGET}" "${TMP_DIR}/SHA256S
     echo "[+] Checksum verified."
 fi
 
-chmod +x "${TMP_DIR}/sscan"
+chmod +x "${TMP_DIR}/veyl"
 
 # 5. Install Binary
 if [ ! -d "${INSTALL_DIR}" ]; then
@@ -90,22 +90,22 @@ if [ ! -d "${INSTALL_DIR}" ]; then
 fi
 
 if [ -w "${INSTALL_DIR}" ]; then
-    mv "${TMP_DIR}/sscan" "${INSTALL_DIR}/sscan"
+    mv "${TMP_DIR}/veyl" "${INSTALL_DIR}/veyl"
 else
     echo "[*] Root permissions required to install to ${INSTALL_DIR}"
-    sudo mv "${TMP_DIR}/sscan" "${INSTALL_DIR}/sscan"
+    sudo mv "${TMP_DIR}/veyl" "${INSTALL_DIR}/veyl"
 fi
 
-echo "[+] Successfully installed sscan to ${INSTALL_DIR}/sscan"
+echo "[+] Successfully installed veyl to ${INSTALL_DIR}/veyl"
 
 # Verify command path
-if ! command -v sscan >/dev/null 2>&1; then
+if ! command -v veyl >/dev/null 2>&1; then
     echo "[!] Notice: ${INSTALL_DIR} is not in your current PATH."
     echo "    Add it by running:"
     echo "    export PATH=\"${INSTALL_DIR}:\$PATH\""
 else
     echo "[+] Verification:"
-    sscan --version || true
+    veyl --version || true
 fi
 
-echo "[+] Done. Run 'sscan' to launch the interactive terminal audit menu."
+echo "[+] Done. Run 'veyl' to launch the interactive terminal audit menu."

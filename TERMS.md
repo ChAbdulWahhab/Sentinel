@@ -1,14 +1,14 @@
-# SentinelScan Terms of Service
+# Veylance Terms of Service
 
 **Terms Version:** 1.0  
 **Effective Date:** October 2026
 
-By installing, copying, executing, or otherwise using SentinelScan (including command-line interfaces `sscan`, interactive terminal menus, and programmatic APIs), you agree to be bound by these Terms of Service.
+By installing, copying, executing, or otherwise using Veylance (including command-line interfaces `veyl`, interactive terminal menus, and programmatic APIs), you agree to be bound by these Terms of Service.
 
 ---
 
 ### 1. Scope and Eligibility
-SentinelScan is intended solely for defensive cybersecurity practitioners, website administrators, developers, and security researchers conducting authorized audits. You represent and warrant that you possess the full legal power and authority to enter into these Terms and perform all testing actions requested.
+Veylance is intended solely for defensive cybersecurity practitioners, website administrators, developers, and security researchers conducting authorized audits. You represent and warrant that you possess the full legal power and authority to enter into these Terms and perform all testing actions requested.
 
 ---
 
@@ -22,7 +22,7 @@ Using command-line flags such as `--yes`, `-y`, or `--i-own-this <domain>`, or c
 ---
 
 ### 3. Prohibited Conduct
-You agree not to use SentinelScan for:
+You agree not to use Veylance for:
 - Scanning, probing, crawling, or fingerprinting systems, APIs, or networks without documented permission.
 - Conducting denial-of-service (DoS) or distributed denial-of-service (DDoS) attacks.
 - Exploiting discovered vulnerabilities, extracting unauthorized databases, modifying remote assets, or planting backdoors.
@@ -32,12 +32,12 @@ You agree not to use SentinelScan for:
 ---
 
 ### 4. Audit Logging & Compliance Records
-To support security hygiene and compliance auditing, SentinelScan records operational logs (including target hostnames, timestamps, and declared authorization methods) to local user storage (`~/.sentinelscan/audit.log`). You acknowledge and agree that these local records reflect your usage history.
+To support security hygiene and compliance auditing, Veylance records operational logs (including target hostnames, timestamps, and declared authorization methods) to local user storage (`~/.veylance/audit.log`). You acknowledge and agree that these local records reflect your usage history.
 
 ---
 
 ### 5. Indemnification
-You agree to indemnify, defend, and hold harmless SentinelScan's authors, maintainers, contributors, and distributors from and against any claims, liabilities, damages, losses, costs, expenses, or fees (including reasonable legal fees) arising from:
+You agree to indemnify, defend, and hold harmless Veylance's authors, maintainers, contributors, and distributors from and against any claims, liabilities, damages, losses, costs, expenses, or fees (including reasonable legal fees) arising from:
 - Your use or misuse of the software.
 - Any unauthorized scanning activities initiated by your environment.
 - Your violation of these Terms or the legal rights of any third party.

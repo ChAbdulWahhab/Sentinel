@@ -5,16 +5,16 @@ from pathlib import Path
 import pytest
 from typer.testing import CliRunner
 
-from sentinelscan.cli import app
-from sentinelscan.config import LEGAL_NOTICE, REPORT_DISCLAIMER, TERMS_VERSION
-from sentinelscan.core.findings import Finding, ScanResult, Severity
-from sentinelscan.report.csv_report import CsvReporter
-from sentinelscan.report.html_report import HtmlReporter
-from sentinelscan.report.json_report import JsonReporter
-from sentinelscan.report.markdown import MarkdownReporter
-from sentinelscan.report.sarif import SarifReporter
-from sentinelscan.ui.consent import has_consent, record_consent
-from sentinelscan.utils.audit import log_audit_event
+from veylance.cli import app
+from veylance.config import LEGAL_NOTICE, REPORT_DISCLAIMER, TERMS_VERSION
+from veylance.core.findings import Finding, ScanResult, Severity
+from veylance.report.csv_report import CsvReporter
+from veylance.report.html_report import HtmlReporter
+from veylance.report.json_report import JsonReporter
+from veylance.report.markdown import MarkdownReporter
+from veylance.report.sarif import SarifReporter
+from veylance.ui.consent import has_consent, record_consent
+from veylance.utils.audit import log_audit_event
 
 runner = CliRunner()
 

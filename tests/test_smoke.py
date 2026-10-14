@@ -5,10 +5,10 @@ from typing import ClassVar
 
 import pytest
 
-from sentinelscan.core.engine import ScanEngine
-from sentinelscan.core.target import Target
-from sentinelscan.modules import ALL_MODULES
-from sentinelscan.ui.progress import ScanProgress
+from veylance.core.engine import ScanEngine
+from veylance.core.target import Target
+from veylance.modules import ALL_MODULES
+from veylance.ui.progress import ScanProgress
 
 
 class MockWebServer(http.server.SimpleHTTPRequestHandler):
@@ -26,7 +26,7 @@ class MockWebServer(http.server.SimpleHTTPRequestHandler):
                 "<html>"
                 "<head><script src=\"/bundle.js\"></script></head>"
                 "<body>"
-                "<h1>SentinelScan Smoke Test</h1>"
+                "<h1>Veylance Smoke Test</h1>"
                 "<a href=\"/docs\">Documentation</a>"
                 "<form action=\"/login\" method=\"post\">"
                 "<input type=\"text\" name=\"user\">"

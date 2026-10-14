@@ -1,150 +1,154 @@
-# 🛡️ SentinelScan (`sscan`)
+# Veylance (`veyl`)
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Python: 3.10+](https://img.shields.io/badge/Python-3.10%2B-blue.svg)](https://python.org)
-[![Tests](https://img.shields.io/badge/Tests-Passing-brightgreen.svg)](tests/)
+[![Build Status](https://img.shields.io/github/actions/workflow/status/ChAbdulWahhab/Sentinel/release.yml?branch=main&style=flat-square&label=build)](https://github.com/ChAbdulWahhab/Sentinel/actions)
+[![Release](https://img.shields.io/github/v/release/ChAbdulWahhab/Sentinel?style=flat-square&color=blue)](https://github.com/ChAbdulWahhab/Sentinel/releases)
+[![Python Version](https://img.shields.io/badge/python-3.10%2B-blue?style=flat-square)](https://www.python.org/)
+[![License: MIT](https://img.shields.io/badge/license-MIT-green?style=flat-square)](LICENSE)
+[![Tests](https://img.shields.io/badge/tests-passing-brightgreen?style=flat-square)](tests/)
 
-**SentinelScan** is a fast, developer-friendly, interactive command-line security self-audit tool designed to help website owners, administrators, and security practitioners identify misconfigurations and common vulnerabilities before attackers do.
-
----
-
-## ⚡ Features
-
-- **Interactive Terminal UI:** Launch `sscan` without arguments in an interactive terminal to access the rich TUI menu with live progress bars and summaries.
-- **23 Security Modules:** Automated checks covering SSL/TLS, CORS, CSRF, security headers, JWT flaws, SQLi heuristics, open redirects, sensitive paths, GraphQL introspection, and more.
-- **6 Report Formats:** Export findings in `markdown`, `json`, `html`, `sarif` (GitHub Code Scanning compatible), `csv` (Excel-friendly with UTF-8 BOM), and `pdf`.
-- **Legal Safeguards:** Built-in consent tracking (`~/.sentinelscan/consent.json`), domain ownership verification (`--i-own-this`), and local audit logging (`~/.sentinelscan/audit.log`).
-- **Zero External Runtime Dependencies (Binaries):** Standalone executables for macOS, Linux, and Windows.
+**Veylance** is an automated, high-throughput command-line security auditing engine engineered for security engineers, devsecops teams, and infrastructure owners. It delivers comprehensive heuristic vulnerability assessments and configuration audits against web applications, exposing security exposures before malicious exploitation.
 
 ---
 
-## 📦 Installation
+## Core Capabilities
 
-### Option 1: Quick Install via Script (Linux & macOS)
+- **Interactive Terminal Interface:** Executing `veyl` in an interactive terminal session initiates a high-fidelity terminal UI featuring real-time inspection status, concurrency metrics, and categorized findings.
+- **23 Specialized Audit Modules:** Automated security heuristics across transport encryption, authentication mechanisms, session management, access control boundaries, injection surfaces, and information disclosure.
+- **6 Standardized Report Formats:** Export machine-readable and executive artifacts in `markdown`, `json`, `html`, `sarif` (OASIS standard for GitHub Code Scanning), `csv` (Excel-compatible UTF-8 BOM), and `pdf`.
+- **Integrated Compliance & Governance:** Cryptographic audit logging (`~/.veylance/audit.log`), explicit terms consent persistence (`~/.veylance/consent.json`), and granular domain ownership declarations (`--i-own-this`).
+- **Zero-Dependency Native Binaries:** Standalone release binaries compiled for Linux, macOS (Apple Silicon and Intel), and Windows.
+
+---
+
+## Installation
+
+### Option 1: Native Installation Script (Linux & macOS)
 
 ```bash
 curl -sSL https://raw.githubusercontent.com/ChAbdulWahhab/Sentinel/main/install.sh | bash
 ```
 
-### Option 2: Python / pip
+### Option 2: Python Environment (pip)
 
-Install the package directly into your virtual environment:
+Install Veylance into an active Python virtual environment:
 
 ```bash
-# Clone the repository
+# Clone repository
 git clone https://github.com/ChAbdulWahhab/Sentinel.git
 cd Sentinel
 
-# Install in editable mode with development & PDF dependencies
+# Install package in editable mode with development and PDF dependencies
 pip install -e ".[dev,pdf]"
 ```
 
-### Option 3: Pre-built Binaries
+### Option 3: Pre-compiled Standalone Binaries
 
-Download standalone executables and SHA256 checksums directly from the [GitHub Releases](https://github.com/ChAbdulWahhab/Sentinel/releases) page for:
-- **macOS:** Apple Silicon (`arm64`) and Intel (`x86_64`)
-- **Linux:** `x86_64` and `arm64`
-- **Windows:** `x86_64` executable (`sscan.exe`)
+Download self-contained binaries and cryptographic checksums directly from [GitHub Releases](https://github.com/ChAbdulWahhab/Sentinel/releases):
+- **Linux:** `veyl-linux-amd64`, `veyl-linux-arm64`
+- **macOS:** `veyl-darwin-amd64` (Intel), `veyl-darwin-arm64` (Apple Silicon)
+- **Windows:** `veyl-windows-amd64.exe`
 
 ### Option 4: Package Managers
 
 - **Homebrew (macOS & Linux):**
   ```bash
   brew tap ChAbdulWahhab/Sentinel
-  brew install sentinelscan
+  brew install veylance
   ```
-- **WinGet (Windows):**
+- **Windows Package Manager (WinGet):**
   ```powershell
-  winget install ChAbdulWahhab.SentinelScan
+  winget install ChAbdulWahhab.Veylance
   ```
 
 ---
 
-## 🚀 Quick Start & Usage
+## Quick Start & Usage
 
-### 1. Interactive Menu
-Running `sscan` in any interactive terminal (TTY) launches the interactive menu:
+### 1. Interactive Navigation
+
+Executing `veyl` without subcommands in an interactive terminal opens the interactive management console:
 
 ```bash
-sscan
+veyl
 ```
 
-### 2. Direct CLI Scans
+### 2. Direct Automated Audits
 
 ```bash
-# Full audit of a target domain
-sscan scan https://example.com
+# Execute comprehensive audit against target infrastructure
+veyl scan https://example.com
 
-# Audit with specific modules and export reports
-sscan scan https://example.com -m headers,tls_https,cors -f markdown,html,json -o ./reports
+# Target specific modules with custom output paths and report formats
+veyl scan https://example.com -m headers,tls_https,cors -f markdown,html,json -o ./reports
 
-# Declare ownership to skip interactive consent prompt
-sscan scan https://example.com --i-own-this example.com
+# Declare domain ownership to bypass interactive authorization prompts
+veyl scan https://example.com --i-own-this example.com
 
-# Non-interactive / CI automation (skips prompt)
-sscan scan https://example.com --yes
+# Non-interactive automated execution (CI/CD pipelines)
+veyl scan https://example.com --yes
 ```
 
-### 3. List Available Modules
+### 3. Module Inventory
+
+Inspect all registered security analysis modules:
 
 ```bash
-sscan modules-list
+veyl modules-list
 ```
 
-### 4. Show Version
+### 4. Engine Version
 
 ```bash
-sscan version
+veyl version
 # or
-sscan --version
+veyl --version
 ```
 
 ---
 
-## 🔍 Modules (23)
+## Security Modules (23)
 
-| Category | Modules |
-| :--- | :--- |
-| **Transport & Infrastructure** | `tls_https`, `dns_recon`, `subdomain`, `waf_detect`, `rate_limit` |
-| **HTTP Configuration** | `headers`, `cookies`, `cors`, `csp_analyzer`, `http_methods` |
-| **Information Disclosure** | `sensitive_paths`, `exposed_files`, `directory_list`, `error_leak`, `robots_sitemap`, `tech_fingerprint` |
-| **Application & API Logic** | `forms_csrf`, `graphql_probe`, `jwt_probe`, `js_analysis` |
-| **Injection & Redirection** | `xss_reflection`, `sqli_heuristic`, `open_redirect` |
-
----
-
-## 📊 Report Formats
-
-- **Markdown (`.md`):** Clean tables and findings formatted for GitHub/GitLab pull request comments and issue trackers.
-- **JSON (`.json`):** Machine-readable structured output for CI/CD pipelines and SIEM ingestion.
-- **HTML (`.html`):** Dark-mode responsive dashboard for browser viewing and executive presentation.
-- **SARIF (`.sarif`):** OASIS standard format for GitHub Code Scanning and IDE integrations.
-- **CSV (`.csv`):** Spreadsheet format with UTF-8 BOM encoding for Excel compatibility.
-- **PDF (`.pdf`):** Formal audit document (requires `reportlab`).
+| Category | Modules | Technical Focus |
+| :--- | :--- | :--- |
+| **Transport & Infrastructure** | `tls_https`, `dns_recon`, `subdomain`, `waf_detect`, `rate_limit` | Cipher suites, certificate validation, DNS records, subdomains, WAF presence, rate exhaustion |
+| **HTTP Configuration** | `headers`, `cookies`, `cors`, `csp_analyzer`, `http_methods` | HSTS, CSP policy analysis, CORS origin handling, cookie flags (Secure/HttpOnly/SameSite), dangerous methods |
+| **Information Disclosure** | `sensitive_paths`, `exposed_files`, `directory_list`, `error_leak`, `robots_sitemap`, `tech_fingerprint` | Admin portals, backup files, `.git` leakage, directory traversal, stack traces, version disclosure |
+| **Application & API Logic** | `forms_csrf`, `graphql_probe`, `jwt_probe`, `js_analysis` | CSRF token verification, GraphQL introspection, JWT signature flaws, exposed API routes/keys |
+| **Injection & Routing** | `xss_reflection`, `sqli_heuristic`, `open_redirect` | Contextual parameter reflection, SQL error signatures, unvalidated redirect parameters |
 
 ---
 
-## ⚠️ Legal Warning & Authorized Testing Policy
+## Report Formats
 
-> **IMPORTANT:** SentinelScan is created exclusively for educational, defensive, and authorized self-assessment purposes.
-
-- You may run SentinelScan **only** against websites, systems, and networks that you own or for which you have received express, prior written authorization from the owner.
-- Unauthorized scanning against third-party systems is illegal under applicable cybercrime laws (including the **U.S. CFAA 18 U.S.C. Section 1030**, **UK Computer Misuse Act 1990**, and **India IT Act 2000**).
-- The creators and maintainers of SentinelScan accept **zero liability** for any misuse, damage, or legal consequences arising from using this tool.
-- Review [DISCLAIMER.md](DISCLAIMER.md) and [TERMS.md](TERMS.md) before conducting any scan.
-
----
-
-## 🛡️ Antivirus False-Positive Advisory
-
-Pre-compiled standalone executables for Windows and macOS are packaged using [PyInstaller](https://pyinstaller.org/). Because PyInstaller bundles Python runtime files, dependencies, and scripts into a single compressed binary that unpacks into temporary memory at runtime, generic heuristic engines (e.g. Windows Defender, VirusTotal, or CrowdStrike) may occasionally report a **false positive** (often labeled as `Generic.Trojan` or `Heur.Boring.Packed`).
-
-If your security software flags the standalone binary:
-1. Verify the binary's cryptographic signature against the official `SHA256SUMS.txt` provided in the release.
-2. If you prefer not to whitelist the packaged executable, you can run SentinelScan directly from source via `pip install -e .` without triggering binary unpacker heuristics.
+- **Markdown (`.md`):** Formatted tables and executive breakdowns optimized for GitHub and GitLab pull request annotations and tracking issues.
+- **JSON (`.json`):** Strict schema-validated structured objects designed for CI/CD ingestion, SIEM correlation, and automated pipelines.
+- **HTML (`.html`):** Dark-mode responsive audit dashboard designed for browser analysis and stakeholder distribution.
+- **SARIF (`.sarif`):** OASIS standard format directly compatible with GitHub Code Scanning alerts and security dashboards.
+- **CSV (`.csv`):** Tabular data export with UTF-8 BOM encoding for direct Microsoft Excel and enterprise spreadsheet analysis.
+- **PDF (`.pdf`):** Formal security audit artifact with executive summaries and finding descriptions (requires `reportlab`).
 
 ---
 
-## 🤝 Security Disclosure & Contributing
+## Legal Compliance & Authorized Testing Policy
 
-Please see [SECURITY.md](SECURITY.md) for vulnerability disclosure guidelines and contact procedures. Contributions and pull requests are welcome under the [MIT License](LICENSE).
+> **CRITICAL COMPLIANCE NOTICE:** Veylance is developed exclusively for authorized security auditing, defensive gap analysis, and authorized penetration testing.
+
+- Execution of Veylance against infrastructure without documented, prior written authorization from the system owner violates local and international cybercrime legislation, including the **U.S. Computer Fraud and Abuse Act (CFAA, 18 U.S.C. Section 1030)**, the **UK Computer Misuse Act 1990**, and the **India Information Technology Act 2000**.
+- Maintainers and contributors assume zero liability for unauthorized deployment, operational disruption, or damages caused by scanning activities.
+- Consult [DISCLAIMER.md](DISCLAIMER.md) and [TERMS.md](TERMS.md) before conducting security audits.
+
+---
+
+## Antivirus False-Positive Advisory
+
+Standalone release executables are packaged using PyInstaller. Due to the packaging mechanism bundling Python runtimes, dependencies, and byte-compiled modules into a single binary that decompresses into runtime memory, heuristic signature analyzers (such as Windows Defender, VirusTotal, or enterprise EDR agents) may generate false-positive alerts (e.g., `Generic.Trojan` or `Heur.Boring.Packed`).
+
+To verify binary integrity:
+1. Validate the cryptographic hash against the official `SHA256SUMS.txt` published with the GitHub release.
+2. If organizational security policies restrict packed binaries, deploy Veylance directly from source via `pip install -e .`.
+
+---
+
+## Security Disclosure & Contributing
+
+Refer to [SECURITY.md](SECURITY.md) for coordinated vulnerability disclosure procedures. Contributions are managed under the terms of the [MIT License](LICENSE).

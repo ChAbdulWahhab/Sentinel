@@ -1,5 +1,5 @@
 import pytest
-from sentinelscan.core.findings import Severity, Finding
+from veylance.core.findings import Severity, Finding
 
 
 def test_severity_order():

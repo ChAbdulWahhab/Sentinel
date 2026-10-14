@@ -3,7 +3,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "sentinelscan"
+name = "veylance"
 dynamic = ["version"]
 description = "Interactive CLI website security self-audit tool"
 readme = "README.md"
@@ -27,11 +27,11 @@ pdf = ["reportlab>=4.0"]
 dev = ["pytest>=8.0", "pytest-asyncio>=0.23", "ruff>=0.4", "pyinstaller>=6.0"]
 
 [project.scripts]
-sentinelscan = "sentinelscan.cli:app"
-sscan = "sentinelscan.cli:app"
+veyl = "veylance.cli:app"
+veylance = "veylance.cli:app"
 
 [tool.hatch.version]
-path = "sentinelscan/config.py"
+path = "veylance/config.py"
 
 [tool.hatch.build.targets.wheel]
-packages = ["sentinelscan"]
+packages = ["veylance"]

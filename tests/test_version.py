@@ -4,18 +4,18 @@ import io
 import pytest
 from rich.console import Console
 
-import sentinelscan
-import sentinelscan.core
-from sentinelscan.config import DEFAULT_UA, VERSION
-from sentinelscan.ui.banner import print_banner
+import veylance
+import veylance.core
+from veylance.config import DEFAULT_UA, VERSION
+from veylance.ui.banner import print_banner
 
 
 def test_version_single_source_of_truth():
-    # 1. sentinelscan.__version__ equals config.VERSION
-    assert sentinelscan.__version__ == VERSION
+    # 1. veylance.__version__ equals config.VERSION
+    assert veylance.__version__ == VERSION
 
-    # 2. sentinelscan.core.__version__ equals config.VERSION
-    assert sentinelscan.core.__version__ == VERSION
+    # 2. veylance.core.__version__ equals config.VERSION
+    assert veylance.core.__version__ == VERSION
 
     # 3. DEFAULT_UA contains VERSION
     assert VERSION in DEFAULT_UA
@@ -29,7 +29,7 @@ def test_version_single_source_of_truth():
 
     # 5. Installed package metadata version matches config.VERSION
     try:
-        installed_version = importlib.metadata.version("sentinelscan")
+        installed_version = importlib.metadata.version("veylance")
         assert installed_version == VERSION
     except importlib.metadata.PackageNotFoundError:
         pytest.skip("package not installed")

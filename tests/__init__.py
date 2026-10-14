@@ -1,1 +1,1 @@
-"""SentinelScan test suite."""
+"""Veylance test suite."""

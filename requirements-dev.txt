@@ -1,4 +1,4 @@
-# SentinelScan - Dev Dependencies
+# Veylance - Dev Dependencies
 -r requirements.txt
 
 pytest>=8.0

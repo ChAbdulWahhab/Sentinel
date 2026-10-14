@@ -2,8 +2,8 @@ from datetime import datetime
 from pathlib import Path
 import json
 
-from sentinelscan.core.findings import Finding, ScanResult, Severity
-from sentinelscan.report.json_report import JsonReporter
+from veylance.core.findings import Finding, ScanResult, Severity
+from veylance.report.json_report import JsonReporter
 
 
 def test_json_reporter_utf8_non_ascii(tmp_path: Path):

@@ -1,0 +1,38 @@
+# yaml-language-server: $schema=https://aka.ms/winget-manifest.singleton.1.6.0.schema.json
+
+PackageIdentifier: ChAbdulWahhab.Veylance
+PackageVersion: 0.1.0
+PackageName: Veylance
+Publisher: ChAbdulWahhab
+PublisherUrl: https://github.com/ChAbdulWahhab
+PublisherSupportUrl: https://github.com/ChAbdulWahhab/Sentinel/issues
+Author: ChAbdulWahhab
+License: MIT
+LicenseUrl: https://github.com/ChAbdulWahhab/Sentinel/blob/main/LICENSE
+Copyright: Copyright (c) 2026 ChAbdulWahhab
+ShortDescription: Interactive website security self-audit tool.
+Description: |
+  Veylance (veyl) is a fast, developer-friendly, and interactive terminal
+  security audit tool that assesses web applications across 23 security modules
+  including SSL/TLS, headers, CORS, CSRF, JWT, SQLi heuristics, and sensitive paths.
+Moniker: veyl
+Tags:
+  - security
+  - audit
+  - scanner
+  - pentest
+  - cli
+Commands:
+  - veyl
+  - veylance
+ReleaseDate: 2026-10-14
+Installers:
+  - Architecture: x64
+    InstallerType: portable
+    InstallerUrl: https://github.com/ChAbdulWahhab/Sentinel/releases/download/v0.1.0/veyl-windows-amd64.zip
+    InstallerSha256: PUT_WINDOWS_AMD64_SHA256_HERE
+    Commands:
+      - veyl
+      - veylance
+ManifestType: singleton
+ManifestVersion: 1.6.0
