@@ -9,7 +9,7 @@ description = "Interactive CLI website security self-audit tool"
 readme = "README.md"
 license = { text = "MIT" }
 requires-python = ">=3.10"
-authors = [{ name = "Your Name", email = "you@example.com" }]
+authors = [{ name = "Abdul Wahhab", email = "chabdulwahhab@gmail.com" }]
 keywords = ["security", "audit", "cli", "scanner", "pentest"]
 dependencies = [
     "typer>=0.12.0",
