@@ -4,7 +4,7 @@
 
 set -euo pipefail
 
-REPO="ChAbdulWahhab/Sentinel"
+REPO="ChAbdulWahhab/veylance"
 INSTALL_DIR="${VEYLANCE_INSTALL_DIR:-/usr/local/bin}"
 
 # 1. Detect Operating System

@@ -34,7 +34,7 @@ class HttpMethodsModule(BaseModule):
         # PUT/DELETE probe
         for method in ("PUT", "DELETE"):
             r = await self.session.request(method, self.target.root + "veylance_test_probe.txt",
-                                           content=b"sentinel-probe")
+                                           content=b"veylance-probe")
             if r is not None and r.status_code in (200, 201, 204):
                 self.add(severity=Severity.HIGH,
                          title=f"HTTP {method} allowed",

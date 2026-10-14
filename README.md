@@ -1,7 +1,7 @@
 # Veylance (`veyl`)
 
-[![Build Status](https://img.shields.io/github/actions/workflow/status/ChAbdulWahhab/Sentinel/release.yml?branch=main&style=flat-square&label=build)](https://github.com/ChAbdulWahhab/Sentinel/actions)
-[![Release](https://img.shields.io/github/v/release/ChAbdulWahhab/Sentinel?style=flat-square&color=blue)](https://github.com/ChAbdulWahhab/Sentinel/releases)
+[![Build Status](https://img.shields.io/github/actions/workflow/status/ChAbdulWahhab/veylance/release.yml?branch=main&style=flat-square&label=build)](https://github.com/ChAbdulWahhab/veylance/actions)
+[![Release](https://img.shields.io/github/v/release/ChAbdulWahhab/veylance?style=flat-square&color=blue)](https://github.com/ChAbdulWahhab/veylance/releases)
 [![Python Version](https://img.shields.io/badge/python-3.10%2B-blue?style=flat-square)](https://www.python.org/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green?style=flat-square)](LICENSE)
 [![Tests](https://img.shields.io/badge/tests-passing-brightgreen?style=flat-square)](tests/)
@@ -25,7 +25,7 @@
 ### Option 1: Native Installation Script (Linux & macOS)
 
 ```bash
-curl -sSL https://raw.githubusercontent.com/ChAbdulWahhab/Sentinel/main/install.sh | bash
+curl -sSL https://raw.githubusercontent.com/ChAbdulWahhab/veylance/main/install.sh | bash
 ```
 
 ### Option 2: Python Environment (pip)
@@ -34,8 +34,8 @@ Install Veylance into an active Python virtual environment:
 
 ```bash
 # Clone repository
-git clone https://github.com/ChAbdulWahhab/Sentinel.git
-cd Sentinel
+git clone https://github.com/ChAbdulWahhab/veylance.git
+cd veylance
 
 # Install package in editable mode with development and PDF dependencies
 pip install -e ".[dev,pdf]"
@@ -43,7 +43,7 @@ pip install -e ".[dev,pdf]"
 
 ### Option 3: Pre-compiled Standalone Binaries
 
-Download self-contained binaries and cryptographic checksums directly from [GitHub Releases](https://github.com/ChAbdulWahhab/Sentinel/releases):
+Download self-contained binaries and cryptographic checksums directly from [GitHub Releases](https://github.com/ChAbdulWahhab/veylance/releases):
 - **Linux:** `veyl-linux-amd64`, `veyl-linux-arm64`
 - **macOS:** `veyl-darwin-amd64` (Intel), `veyl-darwin-arm64` (Apple Silicon)
 - **Windows:** `veyl-windows-amd64.exe`
@@ -52,7 +52,7 @@ Download self-contained binaries and cryptographic checksums directly from [GitH
 
 - **Homebrew (macOS & Linux):**
   ```bash
-  brew tap ChAbdulWahhab/Sentinel
+  brew tap ChAbdulWahhab/veylance
   brew install veylance
   ```
 - **Windows Package Manager (WinGet):**

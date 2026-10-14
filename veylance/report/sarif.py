@@ -59,7 +59,7 @@ class SarifReporter(BaseReporter):
                 "tool": {
                     "driver": {
                         "name": "Veylance",
-                        "informationUri": "https://github.com/ChAbdulWahhab/Sentinel",
+                        "informationUri": "https://github.com/ChAbdulWahhab/veylance",
                         "rules": list(rules.values()),
                         "properties": {
                             "legalNotice": LEGAL_NOTICE,

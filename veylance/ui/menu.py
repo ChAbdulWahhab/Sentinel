@@ -300,7 +300,7 @@ def _menu_about() -> None:
         "[dim]Interactive CLI website security self-audit tool.[/dim]\n\n"
         "Made with Python + Typer + Rich + httpx + dnspython\n"
         "23 modules — headers, TLS, CORS, DNS, GraphQL, JWT, and more.\n\n"
-        "[dim]GitHub: github.com/ChAbdulWahhab/Sentinel[/dim]"
+        "[dim]GitHub: github.com/ChAbdulWahhab/veylance[/dim]"
     )
 
 

@@ -5,7 +5,7 @@ from pathlib import Path
 
 APP_NAME = "Veylance"
 VERSION = "0.1.0"
-DEFAULT_UA = f"Veylance/{VERSION} (+https://github.com/ChAbdulWahhab/Sentinel) SelfAudit"
+DEFAULT_UA = f"Veylance/{VERSION} (+https://github.com/ChAbdulWahhab/veylance) SelfAudit"
 
 # Report formats accepted by the CLI
 DEFAULT_FORMATS = {
