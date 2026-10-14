@@ -21,21 +21,28 @@ if ($arch -notin @("x64", "amd64")) {
 Write-Host "[*] Detected platform: Windows (amd64)" -ForegroundColor Cyan
 
 # 2. Determine Version
-if (-not $env:VERSION) {
+$version = $null
+if ($env:VERSION) {
+    $version = $env:VERSION.Trim()
+} else {
     Write-Host "[*] Resolving latest release version..." -ForegroundColor Cyan
     try {
         [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-        $release = Invoke-RestMethod -Uri "https://api.github.com/repos/$repo/releases/latest" -UseBasicParsing -Headers @{ "User-Agent" = "Veylance-Installer" }
-        $version = $release.tag_name
+        $release = Invoke-RestMethod -Uri "https://api.github.com/repos/$repo/releases/latest" -UseBasicParsing -Headers @{ "User-Agent" = "Veylance-Installer" } -ErrorAction Stop
+        if ($release -and $release.tag_name) {
+            $version = [string]$release.tag_name
+        }
     } catch {
-        $version = "v0.1.0"
-        Write-Warning "[!] Failed to query GitHub API. Falling back to default version $version"
+        # API query failed or repository has no releases yet
     }
-} else {
-    $version = $env:VERSION
 }
 
-if (-not $version.StartsWith("v")) {
+if ([string]::IsNullOrWhiteSpace($version)) {
+    $version = "v0.1.0"
+    Write-Warning "[!] No release found via GitHub API. Falling back to default version $version"
+}
+
+if (-not $version.StartsWith("v", [System.StringComparison]::OrdinalIgnoreCase)) {
     $version = "v$version"
 }
 
