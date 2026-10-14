@@ -4,19 +4,33 @@
 $ErrorActionPreference = "Stop"
 
 $repo = "ChAbdulWahhab/veylance"
-$installDir = if ($env:VEYLANCE_INSTALL_DIR) {
-    $env:VEYLANCE_INSTALL_DIR
+
+if ($env:VEYLANCE_INSTALL_DIR) {
+    $installDir = $env:VEYLANCE_INSTALL_DIR
 } else {
-    Join-Path $env:USERPROFILE ".veylance\bin"
+    $installDir = Join-Path $env:USERPROFILE ".veylance\bin"
 }
 
-# 1. Detect Architecture
-$arch = [System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture.ToString().ToLower()
-if ($arch -notin @("x64", "amd64")) {
-    if ($env:PROCESSOR_ARCHITECTURE -notin @("AMD64", "x64")) {
-        Write-Error "[-] Unsupported architecture: $arch. Veylance currently supports Windows x64."
-        exit 1
+# 1. Detect Architecture (PowerShell 5.1 and 7+ compatible)
+$is64 = $false
+try {
+    if ([Environment]::Is64BitOperatingSystem) {
+        $is64 = $true
     }
+} catch {
+    if ([IntPtr]::Size -eq 8) {
+        $is64 = $true
+    }
+}
+
+$procArch = $env:PROCESSOR_ARCHITECTURE
+if ($env:PROCESSOR_ARCHITEW6432) {
+    $procArch = $env:PROCESSOR_ARCHITEW6432
+}
+
+if (-not $is64 -and $procArch -notin @("AMD64", "x64")) {
+    Write-Error "[-] Unsupported architecture ($procArch). Veylance currently supports Windows x64 (amd64)."
+    exit 1
 }
 Write-Host "[*] Detected platform: Windows (amd64)" -ForegroundColor Cyan
 
@@ -26,7 +40,12 @@ $defaultVersion = "v0.1.0"
 $directFallbackUrl = "https://github.com/$repo/releases/download/$defaultVersion/veyl-windows-amd64.zip"
 
 if ($env:VERSION) {
-    $version = $env:VERSION.Trim()
+    $version = [string]$env:VERSION
+    if (-not [string]::IsNullOrWhiteSpace($version)) {
+        $version = $version.Trim()
+    } else {
+        $version = $null
+    }
 } else {
     Write-Host "[*] Resolving latest release version..." -ForegroundColor Cyan
     try {
@@ -45,7 +64,7 @@ if ([string]::IsNullOrWhiteSpace($version)) {
     Write-Warning "[!] No release found via GitHub API. Falling back to direct static release URL: $directFallbackUrl"
 }
 
-if (-not $version.StartsWith("v", [System.StringComparison]::OrdinalIgnoreCase)) {
+if ($version -and -not $version.StartsWith("v", [System.StringComparison]::OrdinalIgnoreCase)) {
     $version = "v$version"
 }
 
@@ -82,16 +101,22 @@ try {
     # 4. Verify SHA256 Checksum
     if (Test-Path $sumsPath) {
         Write-Host "[*] Verifying SHA256 checksum..." -ForegroundColor Cyan
-        $actualHash = (Get-FileHash -Path $zipPath -Algorithm SHA256).Hash.ToLower()
+        $actualHash = (Get-FileHash -Path $zipPath -Algorithm SHA256).Hash
+        if ($actualHash) {
+            $actualHash = $actualHash.ToLower()
+        }
         $sumsContent = Get-Content $sumsPath
         $expectedLine = $sumsContent | Where-Object { $_ -match $assetName }
         if ($expectedLine) {
-            $expectedHash = ($expectedLine -split "\s+")[0].Trim().ToLower()
-            if ($actualHash -ne $expectedHash) {
-                Write-Error "[-] Checksum verification failed!`n    Expected: $expectedHash`n    Actual:   $actualHash"
-                exit 1
+            $splitParts = $expectedLine -split "\s+"
+            if ($splitParts -and $splitParts.Count -gt 0) {
+                $expectedHash = $splitParts[0].Trim().ToLower()
+                if ($actualHash -ne $expectedHash) {
+                    Write-Error "[-] Checksum verification failed!`n    Expected: $expectedHash`n    Actual:   $actualHash"
+                    exit 1
+                }
+                Write-Host "[+] Checksum verified." -ForegroundColor Green
             }
-            Write-Host "[+] Checksum verified." -ForegroundColor Green
         }
     }
 
@@ -111,7 +136,10 @@ try {
 
     # 6. Update User PATH Environment Variable
     $userPath = [Environment]::GetEnvironmentVariable("PATH", "User")
-    $paths = ($userPath -split ';') | Where-Object { $_ -and $_.Trim() }
+    $paths = @()
+    if (-not [string]::IsNullOrEmpty($userPath)) {
+        $paths = @($userPath -split ';') | Where-Object { -not [string]::IsNullOrWhiteSpace($_) }
+    }
     if ($paths -notcontains $installDir) {
         Write-Host "[*] Adding $installDir to User PATH environment variable..." -ForegroundColor Cyan
         $newUserPath = (($paths + $installDir) | Select-Object -Unique) -join ';'
