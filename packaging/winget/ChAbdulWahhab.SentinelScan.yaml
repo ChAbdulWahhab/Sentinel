@@ -5,10 +5,10 @@ PackageVersion: 0.1.0
 PackageName: SentinelScan
 Publisher: ChAbdulWahhab
 PublisherUrl: https://github.com/ChAbdulWahhab
-PublisherSupportUrl: https://github.com/ChAbdulWahhab/sentinelscan/issues
+PublisherSupportUrl: https://github.com/ChAbdulWahhab/Sentinel/issues
 Author: ChAbdulWahhab
 License: MIT
-LicenseUrl: https://github.com/ChAbdulWahhab/sentinelscan/blob/main/LICENSE
+LicenseUrl: https://github.com/ChAbdulWahhab/Sentinel/blob/main/LICENSE
 Copyright: Copyright (c) 2026 ChAbdulWahhab
 ShortDescription: Interactive website security self-audit tool.
 Description: |
@@ -29,7 +29,7 @@ ReleaseDate: 2026-10-14
 Installers:
   - Architecture: x64
     InstallerType: portable
-    InstallerUrl: https://github.com/ChAbdulWahhab/sentinelscan/releases/download/v0.1.0/sscan-windows-amd64.zip
+    InstallerUrl: https://github.com/ChAbdulWahhab/Sentinel/releases/download/v0.1.0/sscan-windows-amd64.zip
     InstallerSha256: PUT_WINDOWS_AMD64_SHA256_HERE
     Commands:
       - sscan

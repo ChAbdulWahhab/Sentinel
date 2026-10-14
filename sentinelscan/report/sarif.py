@@ -59,7 +59,7 @@ class SarifReporter(BaseReporter):
                 "tool": {
                     "driver": {
                         "name": "SentinelScan",
-                        "informationUri": "https://github.com/ChAbdulWahhab/sentinelscan",
+                        "informationUri": "https://github.com/ChAbdulWahhab/Sentinel",
                         "rules": list(rules.values()),
                         "properties": {
                             "legalNotice": LEGAL_NOTICE,

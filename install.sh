@@ -4,7 +4,7 @@
 
 set -euo pipefail
 
-REPO="ChAbdulWahhab/sentinelscan"
+REPO="ChAbdulWahhab/Sentinel"
 INSTALL_DIR="${SENTINELSCAN_INSTALL_DIR:-/usr/local/bin}"
 
 # 1. Detect Operating System

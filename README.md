@@ -23,7 +23,7 @@
 ### Option 1: Quick Install via Script (Linux & macOS)
 
 ```bash
-curl -sSL https://raw.githubusercontent.com/ChAbdulWahhab/sentinelscan/main/install.sh | bash
+curl -sSL https://raw.githubusercontent.com/ChAbdulWahhab/Sentinel/main/install.sh | bash
 ```
 
 ### Option 2: Python / pip
@@ -32,8 +32,8 @@ Install the package directly into your virtual environment:
 
 ```bash
 # Clone the repository
-git clone https://github.com/ChAbdulWahhab/sentinelscan.git
-cd sentinelscan
+git clone https://github.com/ChAbdulWahhab/Sentinel.git
+cd Sentinel
 
 # Install in editable mode with development & PDF dependencies
 pip install -e ".[dev,pdf]"
@@ -41,7 +41,7 @@ pip install -e ".[dev,pdf]"
 
 ### Option 3: Pre-built Binaries
 
-Download standalone executables and SHA256 checksums directly from the [GitHub Releases](https://github.com/ChAbdulWahhab/sentinelscan/releases) page for:
+Download standalone executables and SHA256 checksums directly from the [GitHub Releases](https://github.com/ChAbdulWahhab/Sentinel/releases) page for:
 - **macOS:** Apple Silicon (`arm64`) and Intel (`x86_64`)
 - **Linux:** `x86_64` and `arm64`
 - **Windows:** `x86_64` executable (`sscan.exe`)
@@ -50,7 +50,7 @@ Download standalone executables and SHA256 checksums directly from the [GitHub R
 
 - **Homebrew (macOS & Linux):**
   ```bash
-  brew tap ChAbdulWahhab/sentinelscan
+  brew tap ChAbdulWahhab/Sentinel
   brew install sentinelscan
   ```
 - **WinGet (Windows):**
