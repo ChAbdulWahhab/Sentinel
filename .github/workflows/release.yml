@@ -21,18 +21,6 @@ jobs:
             target: linux-amd64
             binary_name: veyl
             artifact_name: veyl-linux-amd64
-          - os: ubuntu-24.04-arm
-            target: linux-arm64
-            binary_name: veyl
-            artifact_name: veyl-linux-arm64
-          - os: macos-13
-            target: darwin-amd64
-            binary_name: veyl
-            artifact_name: veyl-darwin-amd64
-          - os: macos-14
-            target: darwin-arm64
-            binary_name: veyl
-            artifact_name: veyl-darwin-arm64
           - os: windows-latest
             target: windows-amd64
             binary_name: veyl.exe
@@ -79,7 +67,6 @@ jobs:
           path: |
             veyl-*.*
             veyl-linux-*
-            veyl-darwin-*
 
   publish-release:
     name: Publish Release & Checksums

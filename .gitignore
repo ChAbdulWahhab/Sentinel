@@ -12,3 +12,5 @@ reports/
 .veylance/
 .pytest_cache/
 .ruff_cache/
+node_modules/
+landing-page/
