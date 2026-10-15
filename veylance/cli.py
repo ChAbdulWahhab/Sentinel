@@ -113,6 +113,10 @@ def scan(
         None, "--i-own-this",
         help="Declare domain ownership (e.g. example.com) to bypass interactive consent prompt",
     ),
+    no_history: bool = typer.Option(
+        False, "--no-history",
+        help="Opt-out of saving target fingerprint history in ~/.veylance/history for drift detection",
+    ),
     config: Optional[Path] = typer.Option(None, "--config", help="TOML config file"),
 ) -> None:
     """Run a security audit against a target URL."""
@@ -145,6 +149,7 @@ def scan(
     debug = bool(_unwrap(debug, False))
     yes = bool(_unwrap(yes, False))
     i_own_this = _unwrap(i_own_this, None)
+    no_history = bool(_unwrap(no_history, False))
     config = _unwrap(config, None)
 
     print_banner(console, no_color=no_color)
@@ -254,6 +259,7 @@ def scan(
         cookie=cookie,
         extra_headers=extra_headers,
         interactive=interactive,
+        no_history=no_history,
     )
 
     try:
@@ -316,6 +322,18 @@ def scan(
     console.print("\n[bold green]✓ Reports saved:[/bold green]")
     for p in written:
         console.print(f"  • [cyan]{p}[/cyan]")
+
+    if not no_history:
+        from veylance.utils.drift import save_target_fingerprint
+        subdomains = list(result.info.get("discovered_subdomains", [])) or [
+            h.split(" -> ")[0].strip() for h in result.info.get("Subdomains (A record)", [])
+        ]
+        save_target_fingerprint(
+            target_url=target.base,
+            findings=result.findings,
+            js_endpoints=result.js_endpoints,
+            subdomains=subdomains,
+        )
 
 
 @app.command()

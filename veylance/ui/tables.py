@@ -103,40 +103,100 @@ def render_summary(console: Console, r: ScanResult) -> None:
 
 
 def render_findings(console: Console, r: ScanResult, show_details: bool = True) -> None:
-    """Render findings table and progressive disclosure detail cards."""
+    """Render findings table and progressive disclosure detail cards with Advanced / Hidden Exposure grouping."""
     if not r.findings:
         console.print("\n[dim green]✓[/dim green] [bold white]No findings found.[/bold white]\n")
         return
 
-    # 1. Main Findings Table (Monospace, Clean Box-Drawing)
-    t = Table(
-        title="[bold white]Findings Overview[/bold white]",
-        title_justify="left",
-        show_lines=True,
-        box=box.ROUNDED,
-        border_style="bright_black",
-        header_style="bold dim white",
-        expand=True,
-    )
-    t.add_column("#", width=4, justify="right", style="dim", no_wrap=True)
-    t.add_column("Sev", width=7, justify="center", no_wrap=True)
-    t.add_column("Module", style="dim", overflow="fold", no_wrap=False, min_width=10, max_width=16)
-    t.add_column("Title", overflow="fold", no_wrap=False, ratio=3)
-    t.add_column("Endpoint", overflow="fold", no_wrap=False, ratio=2, style="dim")
+    from veylance.modules import ADVANCED_MODULES, ADVANCED_MODULE_EXPLAINERS
 
-    sorted_findings = sorted(r.findings, key=lambda x: x.severity)
-    for i, f in enumerate(sorted_findings, 1):
-        badge = SEV_BADGES.get(f.severity, f.severity.name)
-        t.add_row(
-            str(i),
-            badge,
-            f.module,
-            f.title,
-            f.url or "-",
+    comb_findings = [f for f in r.findings if f.module == "combined_risk_scenarios"]
+    adv_findings = [f for f in r.findings if f.module in ADVANCED_MODULES and f.module != "combined_risk_scenarios"]
+    std_findings = [f for f in r.findings if f.module not in ADVANCED_MODULES and f.module != "combined_risk_scenarios"]
+
+    def _build_table(findings: list, title: str) -> Table:
+        t = Table(
+            title=title,
+            title_justify="left",
+            show_lines=True,
+            box=box.ROUNDED,
+            border_style="bright_black",
+            header_style="bold dim white",
+            expand=True,
+        )
+        t.add_column("#", width=4, justify="right", style="dim", no_wrap=True)
+        t.add_column("Sev", width=7, justify="center", no_wrap=True)
+        t.add_column("Module", style="dim", overflow="fold", no_wrap=False, min_width=12, max_width=24)
+        t.add_column("Title", overflow="fold", no_wrap=False, ratio=3)
+        t.add_column("Endpoint", overflow="fold", no_wrap=False, ratio=2, style="dim")
+
+        for i, f in enumerate(sorted(findings, key=lambda x: x.severity), 1):
+            badge = SEV_BADGES.get(f.severity, f.severity.name)
+            t.add_row(str(i), badge, f.module, f.title, f.url or "-")
+        return t
+
+    # 1. Combined Risk Scenarios (Rendered ABOVE Standard Findings)
+    if comb_findings:
+        console.print()
+        console.print(_build_table(comb_findings, "[bold magenta]Combined Risk Scenarios (Chained Attack Vectors)[/bold magenta]"))
+
+    # 2. Standard Findings Table
+    if std_findings:
+        console.print()
+        console.print(_build_table(std_findings, "[bold white]Standard Findings Overview[/bold white]"))
+
+    # 3. Advanced / Hidden Exposure Table
+    if adv_findings:
+        console.print()
+        console.print(_build_table(adv_findings, "[bold cyan]Advanced / Hidden Exposure Findings[/bold cyan]"))
+
+        active_adv_mods = sorted(set(f.module for f in adv_findings))
+        explainer_lines = [
+            f"[dim cyan]•[/dim cyan] [bold white]{m}:[/bold white] [dim]{ADVANCED_MODULE_EXPLAINERS.get(m, '')}[/dim]"
+            for m in active_adv_mods if m in ADVANCED_MODULE_EXPLAINERS
+        ]
+        if explainer_lines:
+            console.print(
+                Panel(
+                    "\n".join(explainer_lines),
+                    title="[dim]╭─[/dim] [bold cyan]Advanced Detection Focus & Incident Prevention[/bold cyan] [dim]─╮[/dim]",
+                    title_align="left",
+                    border_style="cyan",
+                    box=box.ROUNDED,
+                    expand=True,
+                    padding=(0, 2),
+                )
+            )
+
+    # 4. Changes Since Last Scan (Temporal Drift)
+    drift = r.info.get("scan_drift")
+    if drift and (isinstance(drift, dict) or hasattr(drift, "new_findings")):
+        prior_time = drift.get("prior_timestamp") if isinstance(drift, dict) else drift.prior_timestamp
+        new_cnt = drift.get("new_findings_count") if isinstance(drift, dict) else len(drift.new_findings)
+        res_cnt = drift.get("resolved_findings_count") if isinstance(drift, dict) else len(drift.resolved_findings)
+        new_eps = drift.get("new_js_endpoints_count") if isinstance(drift, dict) else len(drift.new_js_endpoints)
+        new_subs = drift.get("new_subdomains_count") if isinstance(drift, dict) else len(drift.new_subdomains)
+
+        drift_lines = [
+            f"[bold white]Comparison Date:[/bold white] {prior_time}",
+            f"[bold red]+ New Findings:[/bold red] {new_cnt}",
+            f"[bold green]✓ Resolved Findings:[/bold green] {res_cnt}",
+            f"[dim]+ New JS Endpoints:[/dim] {new_eps}   [dim]+ New Subdomains:[/dim] {new_subs}",
+        ]
+        console.print()
+        console.print(
+            Panel(
+                "\n".join(drift_lines),
+                title=f"[dim]╭─[/dim] [bold yellow]Changes Since Last Scan ({prior_time[:16]})[/bold yellow] [dim]─╮[/dim]",
+                title_align="left",
+                border_style="yellow",
+                box=box.ROUNDED,
+                expand=True,
+                padding=(0, 2),
+            )
         )
 
-    console.print()
-    console.print(t)
+    sorted_findings = sorted(r.findings, key=lambda x: x.severity)
 
     # 2. Progressive Disclosure: Detailed Evidence & Actionable Fix Cards
     if show_details:

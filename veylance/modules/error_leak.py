@@ -1,11 +1,13 @@
-"""Error page internal information leakage detection with edge error filtering."""
+"""Error page internal information leakage detection with edge error and baseline filtering."""
 from __future__ import annotations
 
+import hashlib
 import re
 import time
 
 from veylance.core.findings import Severity
 from veylance.modules.base import BaseModule
+from veylance.utils.baseline import get_or_create_baseline
 
 ERROR_PATTERNS = [
     r"Traceback \(most recent call last\)",
@@ -36,6 +38,7 @@ class ErrorLeakModule(BaseModule):
     description = "Internal information leakage in error pages"
 
     async def run(self):
+        baseline = await get_or_create_baseline(self.session, self.target.base, self.ctx)
         probes = [
             f"/this-page-not-exist-{int(time.time())}",
             "/%00",
@@ -50,14 +53,22 @@ class ErrorLeakModule(BaseModule):
             if r is None:
                 continue
 
+            content = getattr(r, "content", None)
+            if content is None:
+                content = r.text.encode("utf-8") if getattr(r, "text", None) else b""
+            b_hash = hashlib.sha256(content).hexdigest()
+
             # Skip CDN/Cloudflare generic edge error pages (520-526) to avoid false positives
             if r.status_code in (520, 521, 522, 523, 524, 525, 526) and "cloudflare" in r.text.lower():
+                continue
+
+            # If response matches baseline catch-all, skip
+            if baseline.matches(r.status_code, len(content), b_hash):
                 continue
 
             for pat in ERROR_PATTERNS:
                 m = re.search(pat, r.text, re.I)
                 if m:
-                    # Guard against matching Cloudflare or generic CDN error pages
                     snippet = r.text[max(0, m.start() - 80):m.end() + 120]
                     self.add(
                         severity=Severity.HIGH,

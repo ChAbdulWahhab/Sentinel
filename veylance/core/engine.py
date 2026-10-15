@@ -35,6 +35,8 @@ class ScanEngine:
         cookie: Optional[str] = None,
         extra_headers: Optional[dict] = None,
         interactive: bool = False,
+        no_history: bool = False,
+        history_dir: Optional[Any] = None,
     ):
         self.target = target
         self.module_names = [m for m in modules if m in ALL_MODULES]
@@ -48,6 +50,8 @@ class ScanEngine:
         self.cookie = cookie
         self.extra_headers = extra_headers or {}
         self.interactive = interactive
+        self.no_history = no_history
+        self.history_dir = history_dir
 
     async def run(self, progress: ScanProgress | None = None) -> ScanResult:
         if progress is None:
@@ -75,6 +79,8 @@ class ScanEngine:
                 "info": {},
                 "findings": [],
                 "rate_requests": self.rate_requests,
+                "no_history": self.no_history,
+                "history_dir": self.history_dir,
             }
 
             # ---- Crawl (if any module requests it) ----
@@ -127,7 +133,23 @@ class ScanEngine:
                         logger.debug("Module %s error: %s", name, e, exc_info=True)
                         progress.fail(name, f"{type(e).__name__}")
 
-            await asyncio.gather(*(run_module(n) for n in self.module_names))
+            from veylance.modules import CORRELATION_MODULES
+            phase1_modules = [m for m in self.module_names if m not in CORRELATION_MODULES]
+            phase2_modules = [m for m in self.module_names if m in CORRELATION_MODULES]
+
+            # Phase 1: Standard and Advanced Active Scan Modules
+            if phase1_modules:
+                await asyncio.gather(*(run_module(n) for n in phase1_modules))
+
+            # Populate findings context so correlation and drift modules can analyze them
+            ctx["findings"] = list(findings)
+
+            # Phase 2: Post-scan Correlation & Drift Modules (no new HTTP requests)
+            if phase2_modules:
+                await asyncio.gather(*(run_module(n) for n in phase2_modules))
+
+            if hasattr(progress, "stop"):
+                progress.stop()
 
             return ScanResult(
                 target=self.target.base,

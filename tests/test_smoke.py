@@ -107,9 +107,9 @@ def mock_server():
     server.server_close()
 
 
-def test_smoke_all_23_modules(mock_server: str):
-    """Run all 23 modules via ScanEngine against a local mock target and verify no errors."""
-    assert len(ALL_MODULES) == 23
+def test_smoke_all_modules(mock_server: str):
+    """Run all modules via ScanEngine against a local mock target and verify no errors."""
+    assert len(ALL_MODULES) == 35
 
     target = Target(mock_server)
     engine = ScanEngine(
@@ -124,8 +124,8 @@ def test_smoke_all_23_modules(mock_server: str):
 
     result = asyncio.run(engine.run(progress=ScanProgress(quiet=True)))
 
-    # Verify that all 23 modules were executed
-    assert len(result.modules_run) == 23
+    # Verify that all 35 modules were executed
+    assert len(result.modules_run) == 35
     assert set(result.modules_run) == set(ALL_MODULES.keys())
 
     # Verify that zero unhandled exceptions or runtime crashes occurred
