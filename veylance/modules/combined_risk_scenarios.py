@@ -33,7 +33,14 @@ def _eval_cors_admin_no_rate_limit(findings: list[Finding], ctx: dict[str, Any],
     cors_admin = False
     cors_evidence = ""
     for f in findings:
-        if f.module == "cors" and ("admin" in (f.url or "").lower() or "admin" in f.title.lower() or "wildcard" in f.title.lower()):
+        code = f.code or f.finding_code or ""
+        is_cors = code.startswith("CORS_") or f.module == "cors"
+        if is_cors and (
+            code in ("CORS_WILDCARD", "CORS_REFLECTED_ORIGIN", "CORS_REFLECTED_CREDENTIALS", "CORS_WILDCARD_CREDENTIALS")
+            or "admin" in (f.url or "").lower()
+            or "admin" in f.title.lower()
+            or "wildcard" in f.title.lower()
+        ):
             cors_admin = True
             cors_evidence = f.evidence or f.title
             break
@@ -51,7 +58,10 @@ def _eval_cors_admin_no_rate_limit(findings: list[Finding], ctx: dict[str, Any],
 
     no_rate_limit = False
     for f in findings:
-        if f.module == "rate_limit" and ("no rate limit" in f.title.lower() or "missing rate limit" in f.title.lower()):
+        code = f.code or f.finding_code or ""
+        if code == "RATE_LIMIT_NOT_DETECTED" or (
+            f.module == "rate_limit" and any(k in f.title.lower() for k in ("not detected", "no rate limit", "missing rate limit"))
+        ):
             no_rate_limit = True
             break
 
@@ -65,13 +75,20 @@ def _eval_cors_admin_no_rate_limit(findings: list[Finding], ctx: dict[str, Any],
 
 def _eval_xss_no_csp_no_csrf(findings: list[Finding], ctx: dict[str, Any], target: Target) -> tuple[bool, str, str]:
     """Missing defense-in-depth: XSS + Missing CSP + No CSRF on forms."""
-    has_xss = any(f.module == "xss_reflection" and f.severity <= Severity.MEDIUM for f in findings)
+    has_xss = any(
+        (f.code or f.finding_code) == "XSS_REFLECTION"
+        or (f.module == "xss_reflection" and f.severity <= Severity.MEDIUM)
+        for f in findings
+    )
     has_no_csp = any(
-        (f.module in ("headers", "csp_analyzer") and "csp" in f.title.lower() and ("missing" in f.title.lower() or "unsafe" in f.title.lower()))
+        (f.code or f.finding_code) in ("CSP_MISSING", "CSP_WEAK")
+        or (f.module in ("headers", "csp_analyzer") and "csp" in f.title.lower() and ("missing" in f.title.lower() or "unsafe" in f.title.lower()))
         for f in findings
     )
     has_no_csrf = any(
-        (f.module == "forms_csrf" and "csrf" in f.title.lower()) for f in findings
+        (f.code or f.finding_code) == "CSRF_TOKEN_MISSING"
+        or (f.module == "forms_csrf" and "csrf" in f.title.lower())
+        for f in findings
     ) or (len(ctx.get("forms", [])) > 0 and not any(f.module == "forms_csrf" and "protected" in f.title.lower() for f in findings))
 
     if has_xss and has_no_csp and has_no_csrf:
@@ -83,23 +100,33 @@ def _eval_xss_no_csp_no_csrf(findings: list[Finding], ctx: dict[str, Any], targe
 
 def _eval_dangling_subdomain_mail(findings: list[Finding], ctx: dict[str, Any], target: Target) -> tuple[bool, str, str]:
     """Subdomain takeover candidate + subdomain in SPF/DMARC mail configuration."""
-    takeover_findings = [f for f in findings if f.module == "subdomain_takeover"]
+    takeover_findings = [
+        f for f in findings
+        if (f.code or f.finding_code) == "SUBDOMAIN_TAKEOVER_CANDIDATE" or f.module == "subdomain_takeover"
+    ]
     if not takeover_findings:
         return False, "", ""
 
-    # Check if SPF/DMARC info or findings indicate active mail routing
+    # Check for POSITIVE presence of mail setup (SPF/DMARC/MX configured, NOT missing)
     has_mail_setup = False
     for f in findings:
-        if f.module == "dns_recon" and any(k in f.title.lower() for k in ("spf", "dmarc", "mx", "mail")):
+        code = f.code or f.finding_code or ""
+        if code in ("SPF_RECORD_PRESENT", "DMARC_RECORD_PRESENT", "DMARC_POLICY_WEAK", "MX_RECORDS_PRESENT"):
+            has_mail_setup = True
+            break
+        # Check title only for positive presence, NEVER if title mentions missing
+        if f.module == "dns_recon" and any(k in f.title.lower() for k in ("configured", "present", "active", "enforced")) and "missing" not in f.title.lower():
             has_mail_setup = True
             break
 
-    if "dns" in ctx.get("info", {}) or "Subdomains (A record)" in ctx.get("info", {}):
+    # Context info check for confirmed positive records
+    info = ctx.get("info", {})
+    if info.get("spf_record") or info.get("dmarc_record") or info.get("MX records") or info.get("mail_configured"):
         has_mail_setup = True
 
     if has_mail_setup:
         sub = takeover_findings[0].url or "subdomain"
-        evidence = f"Dangling CNAME on {sub} | Domain has active DNS/mail configuration (phishing sender forgery risk)."
+        evidence = f"Dangling CNAME on {sub} | Domain has active organizational mail policy (phishing sender forgery risk)."
         return True, "Dangling subdomain takeover risk combined with active organizational mail policy", evidence
 
     return False, "", ""
@@ -107,8 +134,16 @@ def _eval_dangling_subdomain_mail(findings: list[Finding], ctx: dict[str, Any], 
 
 def _eval_git_exposure_with_secrets(findings: list[Finding], ctx: dict[str, Any], target: Target) -> tuple[bool, str, str]:
     """Exposed .git repository + secrets found in JS bundles."""
-    has_git = any(f.module == "git_exposure" and f.severity == Severity.CRITICAL for f in findings)
-    has_secrets = any(f.module == "secrets_in_js" for f in findings)
+    has_git = any(
+        (f.code or f.finding_code) == "GIT_EXPOSURE"
+        or (f.module == "git_exposure" and f.severity == Severity.CRITICAL)
+        for f in findings
+    )
+    has_secrets = any(
+        (f.code or f.finding_code) == "SECRET_IN_JS"
+        or f.module == "secrets_in_js"
+        for f in findings
+    )
 
     if has_git and has_secrets:
         evidence = "Publicly accessible .git object history verified + Hardcoded API keys/secrets identified in client bundles."
@@ -119,9 +154,21 @@ def _eval_git_exposure_with_secrets(findings: list[Finding], ctx: dict[str, Any]
 
 def _eval_sourcemap_with_sensitive_comments(findings: list[Finding], ctx: dict[str, Any], target: Target) -> tuple[bool, str, str]:
     """Exposed sourcemap + developer comments or internal endpoints leak."""
-    has_map = any(f.module == "source_map_exposure" for f in findings)
-    has_comment = any(f.module == "comment_leak" for f in findings)
-    has_secret = any(f.module == "secrets_in_js" for f in findings)
+    has_map = any(
+        (f.code or f.finding_code) == "SOURCE_MAP_EXPOSURE"
+        or f.module == "source_map_exposure"
+        for f in findings
+    )
+    has_comment = any(
+        (f.code or f.finding_code) == "COMMENT_LEAK"
+        or f.module == "comment_leak"
+        for f in findings
+    )
+    has_secret = any(
+        (f.code or f.finding_code) == "SECRET_IN_JS"
+        or f.module == "secrets_in_js"
+        for f in findings
+    )
 
     if has_map and (has_comment or has_secret):
         evidence = "Unminified JavaScript source maps publicly accessible + Internal endpoints/credentials exposed in client code."

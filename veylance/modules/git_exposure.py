@@ -47,6 +47,7 @@ class GitExposureModule(BaseModule):
                 if signature_rx.search(text):
                     snippet = text.strip().splitlines()[0] if text.strip() else ""
                     self.add(
+                        code="GIT_EXPOSURE",
                         severity=Severity.CRITICAL,
                         title=f"Git repository exposure: {path}",
                         detail=(

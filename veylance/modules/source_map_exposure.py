@@ -87,6 +87,7 @@ class SourceMapExposureModule(BaseModule):
                 if is_valid_map:
                     evidence_str = sources_preview or text[:120]
                     self.add(
+                        code="SOURCE_MAP_EXPOSURE",
                         severity=Severity.HIGH,
                         title=f"Public JavaScript source map exposed: {map_url.split('/')[-1]}",
                         detail=(

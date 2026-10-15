@@ -116,6 +116,7 @@ class SubdomainTakeoverModule(BaseModule):
                 is_vulnerable, matched_sig = await self._verify_dangling_http(sub, matched_fp["patterns"])
                 if is_vulnerable:
                     self.add(
+                        code="SUBDOMAIN_TAKEOVER_CANDIDATE",
                         severity=Severity.CRITICAL,
                         title=f"Subdomain takeover risk: {sub} -> {matched_fp['service']}",
                         detail=(

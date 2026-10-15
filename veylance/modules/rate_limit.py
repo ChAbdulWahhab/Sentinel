@@ -93,6 +93,7 @@ class RateLimitModule(BaseModule):
             evidence_str = f"Sent {n} rapid requests in {dur:.2f}s; received status {code_counts} with no 429 or rate headers."
             info["Rate limiter"] = "Not detected"
             self.add(
+                code="RATE_LIMIT_NOT_DETECTED",
                 severity=Severity.MEDIUM,
                 title="Rate limiting not detected on target",
                 detail=f"No HTTP 429 or throttling headers (X-RateLimit-*) observed after {n} rapid burst requests.",

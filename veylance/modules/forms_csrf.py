@@ -22,7 +22,8 @@ class FormsCsrfModule(BaseModule):
             )
 
             if f["method"] == "POST" and not has_csrf:
-                self.add(severity=Severity.MEDIUM,
+                self.add(code="CSRF_TOKEN_MISSING",
+                         severity=Severity.MEDIUM,
                          title=f"CSRF token missing in POST form ({page})",
                          detail=f"action=`{f['action'] or '(same page)'}`",
                          fix="Implement CSRF tokens, SameSite cookies, or Origin header checks.",

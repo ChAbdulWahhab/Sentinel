@@ -72,6 +72,7 @@ class CommentLeakModule(BaseModule):
                     seen_findings.add(dedup_key)
 
                     self.add(
+                        code="COMMENT_LEAK",
                         severity=sev,
                         title=f"Information leakage in developer comments: {category}",
                         detail=(

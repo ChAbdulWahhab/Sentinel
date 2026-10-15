@@ -65,7 +65,9 @@ class HeadersModule(BaseModule):
             if lname == "strict-transport-security" and self.target.scheme != "https":
                 continue
             if lname not in h:
+                code_name = "CSP_MISSING" if lname == "content-security-policy" else f"HEADER_MISSING_{name.upper().replace('-', '_')}"
                 self.add(
+                    code=code_name,
                     severity=sev,
                     title=f"Missing security header: {name}",
                     detail=msg,

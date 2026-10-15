@@ -36,6 +36,7 @@ class XssReflectionModule(BaseModule):
                     ctx = body[max(0, idx-30):idx+len(PAYLOAD)+30]
                     unescaped = "<svg/onload=alert(1)>" in ctx
                     self.add(
+                        code="XSS_REFLECTION",
                         severity=Severity.HIGH if unescaped else Severity.LOW,
                         title=f"XSS reflection in `{param}` param",
                         detail=f"URL: {new_url}\nContext: {ctx[:120]}",

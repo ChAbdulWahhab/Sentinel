@@ -111,6 +111,7 @@ class SecretsInJsModule(BaseModule):
 
                 location_type = "source map" if is_sourcemap else "JS bundle"
                 self.add(
+                    code="SECRET_IN_JS",
                     severity=sev,
                     title=f"Hardcoded {kind} in {location_type}",
                     detail=(

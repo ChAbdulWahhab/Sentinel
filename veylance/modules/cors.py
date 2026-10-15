@@ -26,6 +26,7 @@ class CorsModule(BaseModule):
 
                 if acao == evil and acac:
                     self.add(
+                        code="CORS_REFLECTED_CREDENTIALS",
                         severity=Severity.HIGH,
                         title="Critical CORS misconfiguration: arbitrary Origin reflection with credentials",
                         detail=f"The server reflected untrusted origin '{evil}' and allowed credentials (cookies/tokens). "
@@ -38,6 +39,7 @@ class CorsModule(BaseModule):
                     )
                 elif acao == evil:
                     self.add(
+                        code="CORS_REFLECTED_ORIGIN",
                         severity=Severity.MEDIUM,
                         title="CORS arbitrary Origin reflection",
                         detail=f"The server reflects arbitrary origins ('{evil}') in Access-Control-Allow-Origin.",
@@ -48,6 +50,7 @@ class CorsModule(BaseModule):
                     )
                 elif acao == "*" and acac:
                     self.add(
+                        code="CORS_WILDCARD_CREDENTIALS",
                         severity=Severity.HIGH,
                         title="CORS: wildcard (*) with credentials enabled",
                         detail="Access-Control-Allow-Origin is set to '*' while Access-Control-Allow-Credentials is true. "
@@ -58,6 +61,7 @@ class CorsModule(BaseModule):
                     )
                 elif acao == "*":
                     self.add(
+                        code="CORS_WILDCARD",
                         severity=Severity.LOW,
                         title="CORS wildcard (*) allowed",
                         detail="Endpoint allows public cross-origin reads from any website.",

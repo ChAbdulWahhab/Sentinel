@@ -34,6 +34,8 @@ class Finding:
     severity: Severity
     title: str
     detail: str
+    code: Optional[str] = None          # Stable identifier, e.g. "RATE_LIMIT_NOT_DETECTED"
+    finding_code: Optional[str] = None  # Alias for code
     fix: str = ""
     module: str = ""
     url: str = ""
@@ -42,6 +44,12 @@ class Finding:
     owasp: Optional[str] = None        # e.g. "A03:2021"
     references: list[str] = field(default_factory=list)
     timestamp: datetime = field(default_factory=datetime.now)
+
+    def __post_init__(self):
+        if self.code and not self.finding_code:
+            self.finding_code = self.code
+        elif self.finding_code and not self.code:
+            self.code = self.finding_code
 
 
 @dataclass
