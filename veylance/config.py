@@ -4,7 +4,7 @@ from __future__ import annotations
 from pathlib import Path
 
 APP_NAME = "Veylance"
-VERSION = "0.1.4"
+VERSION = "0.1.5"
 DEFAULT_UA = f"Veylance/{VERSION} (+https://github.com/ChAbdulWahhab/veylance) SelfAudit"
 
 # Report formats accepted by the CLI
