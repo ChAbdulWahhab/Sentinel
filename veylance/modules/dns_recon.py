@@ -52,7 +52,14 @@ class DnsReconModule(BaseModule):
 
         # DMARC
         dmarc = await safe(f"_dmarc.{host}", "TXT")
-        dmarc_val = dmarc[0].to_text().strip('"') if dmarc else None
+        dmarc_val = None
+        if dmarc:
+            for r in dmarc:
+                s = r.to_text().strip('"')
+                if s.lower().startswith("v=dmarc1") or "v=dmarc1" in s.lower():
+                    dmarc_val = s
+                    break
+
         if not dmarc_val:
             self.add(
                 code="DMARC_RECORD_MISSING",

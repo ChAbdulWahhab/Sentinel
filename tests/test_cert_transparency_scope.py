@@ -14,6 +14,8 @@ from veylance.modules.cert_transparency_recon import (
     [
         ("dealsafe.pages.dev", "dealsafe.pages.dev"),
         ("sub.dealsafe.pages.dev", "dealsafe.pages.dev"),
+        ("decorum.pythonanywhere.com", "decorum.pythonanywhere.com"),
+        ("sub.decorum.pythonanywhere.com", "decorum.pythonanywhere.com"),
         ("my-app.vercel.app", "my-app.vercel.app"),
         ("api.my-app.vercel.app", "my-app.vercel.app"),
         ("chabdulwahhab.github.io", "chabdulwahhab.github.io"),

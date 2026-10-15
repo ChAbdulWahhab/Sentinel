@@ -104,17 +104,24 @@ def print_banner(
     left_table = Table(box=None, show_header=False, padding=0, expand=True)
     left_table.add_column("Content", ratio=1)
 
-    inner_col_width = (term_width // 2) - 6 if term_width >= 96 else term_width - 6
+    inner_col_width = (term_width * 12 // 23) - 4 if term_width >= 96 else term_width - 6
 
-    # Select ASCII wordmark if terminal column is wide enough (>= 45), else stylized bold typography
-    if inner_col_width >= 45:
-        logo_lines = [
-            r" _  _ ____ _   _ _    ____ _  _ ____ ____ ",
-            r" |  | |___  \_/  |    |__| |\ | |    |___ ",
-            r"  \/  |___   |   |___ |  | | \| |___ |___ ",
-        ]
+    # Select ASCII wordmark if terminal column is wide enough (>= 42), else stylized bold typography
+    if inner_col_width >= 42:
+        try:
+            import pyfiglet
+            wordmark_str = pyfiglet.figlet_format("Veylance", font="slant").rstrip()
+        except Exception:
+            wordmark_str = (
+                " _    __           __                    \n"
+                "| |  / /__  __  __/ /___ _____  ________ \n"
+                "| | / / _ \\/ / / / / __ `/ __ \\/ ___/ _ \\\n"
+                "| |/ /  __/ /_/ / / /_/ / / / / /__/  __/\n"
+                "|___/\\___/\\__, /_/\\__,_/_/ /_/\\___/\\___/ \n"
+                "         /____/                          "
+            )
         logo_text = Text()
-        for line in logo_lines:
+        for line in wordmark_str.splitlines():
             logo_text.append(line + "\n", style="bold #dc2626")
         left_table.add_row(logo_text)
     else:

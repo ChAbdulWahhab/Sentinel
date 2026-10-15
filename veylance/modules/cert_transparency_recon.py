@@ -3,58 +3,36 @@ from __future__ import annotations
 
 import asyncio
 import json
+import tldextract
 
 from veylance.core.findings import Severity
 from veylance.modules.base import BaseModule
 
-
-MULTI_LEVEL_HOSTING_DOMAINS = (
-    "pages.dev",
-    "vercel.app",
-    "github.io",
-    "herokuapp.com",
-    "netlify.app",
-    "fly.dev",
-    "firebaseapp.com",
-    "web.app",
-    "azurewebsites.net",
-    "cloudfront.net",
-    "amplifyapp.com",
-    "gitlab.io",
-)
+_EXTRACTOR = tldextract.TLDExtract(cache_dir=None, include_psl_private_domains=True)
 
 
 def get_ct_query_target(hostname: str) -> str:
-    """Build the scope for CT log queries without truncating multi-level hosting domains.
+    """Build the scope for CT log queries using the Public Suffix List (including private domains).
 
-    For multi-level hosting platforms (e.g. dealsafe.pages.dev, app.vercel.app),
-    the query must use the full tenant domain rather than a truncated platform apex.
+    For multi-level hosting platforms (e.g. dealsafe.pages.dev, decorum.pythonanywhere.com,
+    app.vercel.app, user.github.io, app.herokuapp.com), the query uses the registered tenant domain
+    under the public suffix rather than the shared platform apex. For normal domains
+    (example.com, example.co.uk), it resolves to the registered apex.
     """
     clean_host = hostname.strip().lower().rstrip(".")
     if not clean_host:
         return ""
 
-    parts = clean_host.split(".")
+    try:
+        ext = _EXTRACTOR(clean_host)
+        top = getattr(ext, "top_domain_under_public_suffix", None)
+        if top:
+            return top
+        if ext.domain and ext.suffix:
+            return f"{ext.domain}.{ext.suffix}"
+    except Exception:
+        pass
 
-    # Check multi-level hosting platforms
-    for mld in MULTI_LEVEL_HOSTING_DOMAINS:
-        if clean_host.endswith(f".{mld}"):
-            mld_labels = len(mld.split("."))
-            # Include tenant label (e.g. dealsafe + pages.dev)
-            if len(parts) >= mld_labels + 1:
-                return ".".join(parts[-(mld_labels + 1):])
-            return clean_host
-        elif clean_host == mld:
-            return clean_host
-
-    # Check for common two-part TLDs (e.g. co.uk, com.au)
-    two_part_tlds = (".co.uk", ".com.au", ".org.uk", ".gov.uk", ".ac.uk", ".co.nz", ".co.jp")
-    for tld in two_part_tlds:
-        if clean_host.endswith(tld) and len(parts) >= 3:
-            return ".".join(parts[-3:])
-
-    if len(parts) >= 2:
-        return ".".join(parts[-2:])
     return clean_host
 
 

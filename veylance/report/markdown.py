@@ -1,7 +1,7 @@
 """Markdown reporter — GitHub / GitLab friendly."""
 from __future__ import annotations
 
-from veylance.config import LEGAL_NOTICE, REPORT_DISCLAIMER
+from veylance.config import LEGAL_NOTICE, REPORT_DISCLAIMER, VERSION
 from veylance.core.findings import ScanResult, Severity
 from veylance.report.base import BaseReporter
 
@@ -11,17 +11,18 @@ class MarkdownReporter(BaseReporter):
 
     def render(self, r: ScanResult) -> str:
         L: list[str] = []
-        L.append(f"# Veylance Report - {r.target}")
+        L.append(f"# 🛡️ Veylance Security Report — {r.target}")
+        L.append("")
+        L.append(f"> **Engine:** `Veylance v{VERSION} (35 Modules)` | **Audit Date:** `{r.timestamp:%Y-%m-%d %H:%M} UTC` | **Duration:** `{r.duration:.1f}s`")
         L.append("")
         L.append(f"> **Legal Notice:** {LEGAL_NOTICE}")
         L.append("")
-        L.append(f"- **Date:** {r.timestamp:%Y-%m-%d %H:%M}")
-        L.append(f"- **Duration:** {r.duration:.1f}s")
-        L.append(f"- **Modules:** {', '.join(r.modules_run)}")
+        L.append(f"- **Target URL:** {r.target}")
+        L.append(f"- **Modules Executed:** {', '.join(r.modules_run)}")
         L.append(
-            f"- **Pages:** {len(r.pages)} | "
-            f"**Forms:** {len(r.forms)} | "
-            f"**JS:** {len(r.scripts)}"
+            f"- **Crawled Pages:** {len(r.pages)} | "
+            f"**Audited Forms:** {len(r.forms)} | "
+            f"**Discovered Scripts:** {len(r.scripts)}"
         )
         L.append("")
 
