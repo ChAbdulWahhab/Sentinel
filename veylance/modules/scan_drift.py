@@ -46,7 +46,24 @@ class ScanDriftModule(BaseModule):
             "resolved_findings": drift.resolved_findings,
             "new_js_endpoints": drift.new_js_endpoints,
             "new_subdomains": drift.new_subdomains,
+            "subdomain_delta_anomalous": drift.subdomain_delta_anomalous,
+            "subdomain_warning": drift.subdomain_warning,
         }
+
+        # If subdomain delta was flagged as an upstream anomaly, add informative finding
+        if drift.subdomain_delta_anomalous and drift.subdomain_warning:
+            self.add(
+                severity=Severity.LOW,
+                title="Anomalous Subdomain Expansion Suppressed",
+                detail=(
+                    f"{drift.subdomain_warning}\n"
+                    "A massive jump in subdomains between consecutive scans almost always points to wildcard DNS (*.domain), "
+                    "multi-tenant shared hosting, or an upstream certificate transparency query scope artifact rather than true attack surface growth."
+                ),
+                fix="Verify whether wildcard DNS records are active or if the domain is hosted on a multi-tenant platform.",
+                url=self.target.base,
+                evidence=drift.subdomain_warning,
+            )
 
         # If new HIGH or CRITICAL findings were introduced, highlight as drift finding
         high_or_crit_new = [f for f in drift.new_findings if f["severity"] in ("CRITICAL", "HIGH")]

@@ -174,6 +174,10 @@ class HtmlReporter(BaseReporter):
                 for sb in new_subs:
                     drift_parts.append(f"<li><code>{html.escape(sb)}</code></li>")
                 drift_parts.append("</ul>")
+            else:
+                warn = drift.get("subdomain_warning") if isinstance(drift, dict) else getattr(drift, "subdomain_warning", None)
+                if warn:
+                    drift_parts.append(f"<div class='drift-box' style='border-left-color:#d29922'><b>⚠️ Subdomain Anomaly:</b> {html.escape(warn)}</div>")
 
             drift_section = "".join(drift_parts)
         else:

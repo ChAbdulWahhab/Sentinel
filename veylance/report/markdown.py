@@ -137,6 +137,11 @@ class MarkdownReporter(BaseReporter):
                 for sb in new_subs:
                     L.append(f"- `{sb}`")
                 L.append("")
+            else:
+                warn = drift.get("subdomain_warning") if isinstance(drift, dict) else getattr(drift, "subdomain_warning", None)
+                if warn:
+                    L.append(f"> ⚠️ **Subdomain Anomaly Warning:** {warn}")
+                    L.append("")
 
         suppressed = sorted(set(r.info.get("spa_catchall_suppressed", [])))
         if suppressed:

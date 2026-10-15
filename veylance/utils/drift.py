@@ -96,6 +96,9 @@ def save_target_fingerprint(
     return path
 
 
+MAX_SUBDOMAIN_DELTA_SANITY: int = 50
+
+
 @dataclass
 class ScanDriftResult:
     prior_timestamp: str
@@ -103,6 +106,8 @@ class ScanDriftResult:
     resolved_findings: list[dict[str, str]]
     new_js_endpoints: list[str]
     new_subdomains: list[str]
+    subdomain_delta_anomalous: bool = False
+    subdomain_warning: str | None = None
 
     @property
     def has_changes(self) -> bool:
@@ -111,6 +116,7 @@ class ScanDriftResult:
             or self.resolved_findings
             or self.new_js_endpoints
             or self.new_subdomains
+            or self.subdomain_delta_anomalous
         )
 
 
@@ -120,6 +126,7 @@ def compute_scan_drift(
     current_js_endpoints: set[str] | list[str],
     current_subdomains: set[str] | list[str],
     history_dir: Path | None = None,
+    max_subdomain_delta: int = MAX_SUBDOMAIN_DELTA_SANITY,
 ) -> ScanDriftResult | None:
     """Compare current scan data with the most recent prior fingerprint."""
     prior = load_prior_fingerprint(target_url, history_dir=history_dir)
@@ -154,7 +161,26 @@ def compute_scan_drift(
     new_endpoints = sorted(set(current_js_endpoints) - prior_endpoints)
 
     prior_subs = set(prior.get("subdomains", []))
-    new_subs = sorted(set(current_subdomains) - prior_subs)
+    raw_new_subs = sorted(set(current_subdomains) - prior_subs)
+
+    subdomain_delta_anomalous = False
+    subdomain_warning = None
+    if len(raw_new_subs) > max_subdomain_delta:
+        import logging
+        logging.getLogger("veylance.drift").warning(
+            "Subdomain delta of +%d exceeds sanity threshold of %d. Flagging as upstream anomaly.",
+            len(raw_new_subs),
+            max_subdomain_delta,
+        )
+        subdomain_delta_anomalous = True
+        subdomain_warning = (
+            f"Subdomain delta (+{len(raw_new_subs)}) exceeded sanity threshold ({max_subdomain_delta}) "
+            "— suppressed as probable upstream wildcard/platform scope anomaly."
+        )
+        # Suppress reporting thousands of anomalous hostnames
+        new_subs = []
+    else:
+        new_subs = raw_new_subs
 
     return ScanDriftResult(
         prior_timestamp=prior.get("timestamp", ""),
@@ -162,4 +188,6 @@ def compute_scan_drift(
         resolved_findings=resolved_findings,
         new_js_endpoints=new_endpoints,
         new_subdomains=new_subs,
+        subdomain_delta_anomalous=subdomain_delta_anomalous,
+        subdomain_warning=subdomain_warning,
     )
