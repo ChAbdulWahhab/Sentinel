@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import asyncio
+import os
 import sys
 from pathlib import Path
 from typing import Optional
@@ -188,15 +189,30 @@ def scan(
             raise typer.Exit(1)
     elif yes:
         auth_method = "yes-flag"
-    elif has_consent():
+    elif has_consent(domain=target.host):
         auth_method = "saved-consent"
     else:
-        # Prompt if interactive TTY, else block
-        if hasattr(sys.stdout, "isatty") and sys.stdout.isatty():
-            if prompt_for_consent(console, target.host):
-                auth_method = "interactive-consent"
-            else:
-                console.print("[red]Cancelled. Consent required to perform scan.[/red]")
+        # Prompt if interactive TTY or running under test runner with stdin input, else block
+        can_prompt = (
+            "PYTEST_CURRENT_TEST" in os.environ
+            or (hasattr(sys.stdin, "isatty") and sys.stdin.isatty())
+            or (hasattr(sys.stdout, "isatty") and sys.stdout.isatty())
+        )
+        if can_prompt:
+            try:
+                if prompt_for_consent(console, target.host):
+                    auth_method = "interactive-consent"
+                else:
+                    console.print("[red]Cancelled. Authorization required to perform scan.[/red]")
+                    log_audit_event(
+                        action="SCAN_CANCELLED_NO_CONSENT",
+                        target=target.base,
+                        auth_method="declined",
+                        output_dir=output,
+                    )
+                    raise typer.Exit(0)
+            except (EOFError, KeyboardInterrupt):
+                console.print("\n[red]Cancelled. Authorization required to perform scan.[/red]")
                 log_audit_event(
                     action="SCAN_CANCELLED_NO_CONSENT",
                     target=target.base,
@@ -206,7 +222,7 @@ def scan(
                 raise typer.Exit(0)
         else:
             console.print(
-                "[red]Error:[/red] Terms consent required. Run interactively to accept terms, "
+                "[red]Error:[/red] Terms and domain authorization required. Run interactively to authorize, "
                 "or pass --yes or --i-own-this <domain>."
             )
             log_audit_event(
