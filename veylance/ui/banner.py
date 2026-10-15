@@ -1,25 +1,20 @@
+"""Minimalist monospace banner for Claude Code CLI aesthetic."""
+from __future__ import annotations
+
 from rich.console import Console
-from rich.align import Align
 from rich.text import Text
 
-from veylance.config import VERSION
-
-BANNER = r"""
- __      __         _                            
- \ \    / /        | |                           
-  \ \  / /___ _   _| | __ _ _ __   ___ ___       
-   \ \/ // _ \ | | | |/ _` | '_ \ / __/ _ \      
-    \  /|  __/ |_| | | (_| | | | | (_|  __/      
-     \/  \___|\__, |_|\__,_|_| |_|\___\___|      
-               __/ |                             
-              |___/                              
-"""
+from veylance.config import APP_NAME, VERSION
 
 
 def print_banner(console: Console, no_color: bool = False) -> None:
-    style = "bold cyan" if not no_color else None
-    console.print(Align.center(Text(BANNER, style=style)))
-    console.print(Align.center(
-        Text(f"  Interactive Security Audit • v{VERSION}  ", style="dim"),
-    ))
+    """Print clean, minimal monospace header."""
+    if no_color:
+        console.print(f"\n--- {APP_NAME} v{VERSION} -- Website Security Self-Audit ---\n")
+        return
+
+    console.print()
+    console.print(
+        f"[dim]╶─[/dim] [bold white]{APP_NAME.lower()}[/bold white] [dim]v{VERSION} ─ website security self-audit ───────────────────────────╴[/dim]"
+    )
     console.print()

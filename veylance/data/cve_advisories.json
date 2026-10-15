@@ -1,0 +1,96 @@
+{
+  "apache": [
+    {
+      "min_version": "2.4.49",
+      "max_version": "2.4.50",
+      "cve": "CVE-2021-41773 / CVE-2021-42013",
+      "summary": "Path traversal and remote code execution in Apache HTTP Server 2.4.49/2.4.50.",
+      "severity": "HIGH",
+      "fix": "Upgrade to Apache HTTP Server 2.4.51 or later."
+    },
+    {
+      "min_version": "2.4.0",
+      "max_version": "2.4.48",
+      "cve": "CVE-2021-40438",
+      "summary": "Server-Side Request Forgery (SSRF) in mod_proxy.",
+      "severity": "MEDIUM",
+      "fix": "Upgrade to Apache HTTP Server 2.4.51 or later."
+    }
+  ],
+  "nginx": [
+    {
+      "min_version": "0.6.18",
+      "max_version": "1.20.0",
+      "cve": "CVE-2021-23017",
+      "summary": "1-byte memory overwrite in resolver component leading to potential worker crash or DoS.",
+      "severity": "MEDIUM",
+      "fix": "Upgrade Nginx to 1.20.1, 1.21.0 or later, or disable DNS resolution in configuration."
+    }
+  ],
+  "php": [
+    {
+      "min_version": "5.0.0",
+      "max_version": "8.0.30",
+      "cve": "CVE-2024-4577",
+      "summary": "CGI argument injection vulnerability on Windows (Best-Fit character encoding).",
+      "severity": "HIGH",
+      "fix": "Upgrade to PHP 8.1.29, 8.2.20, or 8.3.8+, or avoid running PHP in CGI mode."
+    },
+    {
+      "min_version": "7.0.0",
+      "max_version": "7.3.10",
+      "cve": "CVE-2019-11043",
+      "summary": "Remote Code Execution in PHP-FPM with Nginx fastcgi_split_path_info.",
+      "severity": "HIGH",
+      "fix": "Upgrade PHP to 7.3.11+, 7.2.24+, or 7.1.33+ and verify fastcgi_split_path_info directive."
+    }
+  ],
+  "openssl": [
+    {
+      "min_version": "1.0.1",
+      "max_version": "1.0.1f",
+      "cve": "CVE-2014-0160",
+      "summary": "Heartbleed memory disclosure vulnerability in OpenSSL TLS heartbeat extension.",
+      "severity": "CRITICAL",
+      "fix": "Upgrade OpenSSL to 1.0.1g or later, or recompile with -DOPENSSL_NO_HEARTBEATS."
+    },
+    {
+      "min_version": "3.0.0",
+      "max_version": "3.0.6",
+      "cve": "CVE-2022-3602 / CVE-2022-3786",
+      "summary": "X.509 email address buffer overflow in OpenSSL 3.0.x.",
+      "severity": "HIGH",
+      "fix": "Upgrade OpenSSL to 3.0.7 or later."
+    }
+  ],
+  "jquery": [
+    {
+      "min_version": "1.2.0",
+      "max_version": "3.4.1",
+      "cve": "CVE-2020-11022 / CVE-2020-11023",
+      "summary": "Cross-Site Scripting (XSS) in jQuery.htmlPrefilter regex parsing.",
+      "severity": "MEDIUM",
+      "fix": "Upgrade jQuery to version 3.5.0 or later."
+    }
+  ],
+  "wordpress": [
+    {
+      "min_version": "4.0.0",
+      "max_version": "6.4.1",
+      "cve": "CVE-2023-38000",
+      "summary": "Multiple security issues including authorization bypass and SSRF in WordPress core.",
+      "severity": "MEDIUM",
+      "fix": "Upgrade WordPress to the latest release (6.4.2+ or 6.5+)."
+    }
+  ],
+  "django": [
+    {
+      "min_version": "3.0.0",
+      "max_version": "4.2.7",
+      "cve": "CVE-2023-46695",
+      "summary": "Potential DoS vulnerability in UsernameField via excessive Unicode NFKC normalization.",
+      "severity": "LOW",
+      "fix": "Upgrade Django to 4.2.8+, 4.1.13+, or 3.2.23+."
+    }
+  ]
+}

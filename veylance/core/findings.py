@@ -41,7 +41,7 @@ class Finding:
     cwe: Optional[str] = None          # e.g. "CWE-79"
     owasp: Optional[str] = None        # e.g. "A03:2021"
     references: list[str] = field(default_factory=list)
-    timestamp: datetime = field(default_factory=datetime.utcnow)
+    timestamp: datetime = field(default_factory=datetime.now)
 
 
 @dataclass

@@ -28,7 +28,7 @@ from veylance.core.target import Target
 from veylance.report import get_reporter
 from veylance.ui.banner import print_banner
 from veylance.ui.progress import ScanProgress
-from veylance.ui.tables import render_summary, render_findings
+from veylance.ui.tables import render_summary, render_findings, render_status_line
 from veylance.utils.logger import setup_logger
 
 app = typer.Typer(
@@ -95,6 +95,7 @@ def scan(
     ),
     max_pages: int = typer.Option(40, "--max-pages", help="Crawl limit"),
     concurrency: int = typer.Option(10, "--concurrency", "-c", help="Parallel requests"),
+    max_concurrency: Optional[int] = typer.Option(None, "--max-concurrency", help="Alias for concurrency limit"),
     rate: int = typer.Option(20, "--rate", "-r", help="Rate-limit test requests"),
     timeout: int = typer.Option(10, "--timeout", help="Per-request timeout (s)"),
     insecure: bool = typer.Option(False, "--insecure", "-k", help="Skip TLS certificate verification"),
@@ -106,6 +107,7 @@ def scan(
     no_color: bool = typer.Option(False, "--no-color"),
     quiet: bool = typer.Option(False, "--quiet", "-q", help="Show final summary only"),
     verbose: bool = typer.Option(False, "--verbose", "-v"),
+    debug: bool = typer.Option(False, "--debug", help="Show full stack traces and verbose debug logs on error"),
     yes: bool = typer.Option(False, "--yes", "-y", help="Skip authorization prompt"),
     i_own_this: Optional[str] = typer.Option(
         None, "--i-own-this",
@@ -126,6 +128,9 @@ def scan(
     exclude = _unwrap(exclude, None)
     max_pages = int(_unwrap(max_pages, 40))
     concurrency = int(_unwrap(concurrency, 10))
+    max_c = _unwrap(max_concurrency, None)
+    if max_c is not None:
+        concurrency = int(max_c)
     rate = int(_unwrap(rate, 20))
     timeout = int(_unwrap(timeout, 10))
     insecure = bool(_unwrap(insecure, False))
@@ -137,12 +142,14 @@ def scan(
     no_color = bool(_unwrap(no_color, False))
     quiet = bool(_unwrap(quiet, False))
     verbose = bool(_unwrap(verbose, False))
+    debug = bool(_unwrap(debug, False))
     yes = bool(_unwrap(yes, False))
     i_own_this = _unwrap(i_own_this, None)
     config = _unwrap(config, None)
 
     print_banner(console, no_color=no_color)
-    setup_logger(verbose=verbose, quiet=quiet)
+    setup_logger(verbose=verbose, quiet=quiet, debug=debug)
+
 
     # 1) Target validate
     try:
@@ -271,11 +278,27 @@ def scan(
         )
         console.print("\n[yellow]Interrupted by user.[/yellow]")
         raise typer.Exit(130)
+    except typer.Exit:
+        raise
+    except Exception as exc:
+        import logging
+        import traceback
+        from veylance.config import DEBUG_LOG_FILE
+        logging.getLogger("veylance").error("Unhandled exception during scan: %s", exc, exc_info=True)
+        if debug:
+            console.print("\n[bold red]Traceback (most recent call last):[/bold red]")
+            console.print(traceback.format_exc())
+        else:
+            console.print(f"\n[bold red]✗ Scan Error:[/bold red] {type(exc).__name__}: {exc}")
+            console.print(f"[dim]Full error logged to {DEBUG_LOG_FILE}. Run with --debug to reveal full stack trace.[/dim]\n")
+        raise typer.Exit(1)
 
     # 6) Render
     if not quiet:
         render_summary(console, result)
         render_findings(console, result)
+        render_status_line(console, result, concurrency=concurrency)
+
 
     # 7) Write reports
     output.mkdir(parents=True, exist_ok=True)

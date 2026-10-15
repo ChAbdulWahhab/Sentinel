@@ -26,6 +26,7 @@ CACHE_DIR.mkdir(parents=True, exist_ok=True)
 
 CONSENT_FILE = CONFIG_DIR / "consent.json"
 AUDIT_LOG_FILE = CONFIG_DIR / "audit.log"
+DEBUG_LOG_FILE = CONFIG_DIR / "debug.log"
 
 # Default scan limits
 DEFAULT_MAX_PAGES = 40

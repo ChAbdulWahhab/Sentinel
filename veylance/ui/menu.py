@@ -44,12 +44,15 @@ def _render_menu() -> None:
     for key, label, desc in MENU_OPTIONS:
         t.add_row(f"[{key}]", label, desc)
 
+    from rich import box
     console.print()
     console.print(
         Panel(
             t,
-            title=f"[bold cyan]{APP_NAME}[/bold cyan] v{VERSION}",
-            border_style="cyan",
+            title=f"[bold white]{APP_NAME}[/bold white] [dim]v{VERSION}[/dim]",
+            title_align="left",
+            border_style="bright_black",
+            box=box.ROUNDED,
             padding=(1, 2),
             expand=True,
         )

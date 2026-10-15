@@ -1,4 +1,4 @@
-"""Error page info leak."""
+"""Error page internal information leakage detection with edge error filtering."""
 from __future__ import annotations
 
 import re
@@ -49,17 +49,25 @@ class ErrorLeakModule(BaseModule):
             r = await self.session.get(self.target.base + p)
             if r is None:
                 continue
+
+            # Skip CDN/Cloudflare generic edge error pages (520-526) to avoid false positives
+            if r.status_code in (520, 521, 522, 523, 524, 525, 526) and "cloudflare" in r.text.lower():
+                continue
+
             for pat in ERROR_PATTERNS:
                 m = re.search(pat, r.text, re.I)
                 if m:
+                    # Guard against matching Cloudflare or generic CDN error pages
+                    snippet = r.text[max(0, m.start() - 80):m.end() + 120]
                     self.add(
                         severity=Severity.HIGH,
-                        title="Error page internal info leak",
-                        detail=f"Found `{m.group(0)[:80]}` at path `{p}` (HTTP {r.status_code})",
-                        fix="Disable debug mode in production and configure custom error pages.",
+                        title="Error page internal information leakage",
+                        detail=f"Found application debug pattern '{m.group(0)[:80]}' at path '{p}' (HTTP {r.status_code}).",
+                        fix="Disable debug mode in production (DEBUG=False) and configure custom generic error pages.",
                         url=self.target.base + p,
-                        evidence=r.text[max(0, m.start()-80):m.end()+120],
-                        cwe="CWE-209", owasp="A04:2021",
+                        evidence=f"Matched pattern '{pat}': ...{snippet.strip()}...",
+                        cwe="CWE-209",
+                        owasp="A04:2021",
                     )
                     return self.findings
         return self.findings

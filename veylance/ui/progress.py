@@ -45,9 +45,9 @@ class ScanProgress:
 
         self.console = console or Console()
         self.progress = Progress(
-            SpinnerColumn(style="cyan"),
-            TextColumn("[bold cyan]{task.description}"),
-            BarColumn(bar_width=None, complete_style="green"),
+            SpinnerColumn(style="dim cyan"),
+            TextColumn("[bold white]{task.description}"),
+            BarColumn(bar_width=None, complete_style="dim cyan", finished_style="dim green"),
             TextColumn("[dim]{task.fields[status]}"),
             TimeElapsedColumn(),
             console=self.console,

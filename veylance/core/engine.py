@@ -102,24 +102,36 @@ class ScanEngine:
             errors: list[str] = []
             sem = asyncio.Semaphore(self.concurrency)
 
+            import logging
+            logger = logging.getLogger("veylance.engine")
+
             async def run_module(name: str):
                 async with sem:
                     progress.start(name, status="scanning...")
                     try:
                         mod_cls = ALL_MODULES[name]
                         mod = mod_cls(self.target, session, ctx)
-                        res = await mod.run()
+                        # Ensure one hanging module doesn't stall the rest of the audit
+                        mod_timeout = max(15.0, float(self.timeout * 3))
+                        res = await asyncio.wait_for(mod.run(), timeout=mod_timeout)
                         findings.extend(res)
                         progress.done(name, f"{len(res)} findings")
+                    except asyncio.TimeoutError:
+                        skip_msg = f"module skipped: execution timed out after {int(mod_timeout)}s"
+                        errors.append(f"{name}: {skip_msg}")
+                        logger.debug("Module %s timed out after %ss", name, mod_timeout)
+                        progress.fail(name, "timed out")
                     except Exception as e:
-                        errors.append(f"{name}: {type(e).__name__}: {e}")
+                        skip_msg = f"module skipped: {type(e).__name__}: {e}"
+                        errors.append(f"{name}: {skip_msg}")
+                        logger.debug("Module %s error: %s", name, e, exc_info=True)
                         progress.fail(name, f"{type(e).__name__}")
 
             await asyncio.gather(*(run_module(n) for n in self.module_names))
 
             return ScanResult(
                 target=self.target.base,
-                timestamp=datetime.utcnow(),
+                timestamp=datetime.now(),
                 findings=findings,
                 pages=ctx["pages"],
                 tech=ctx["tech"],
@@ -130,4 +142,4 @@ class ScanEngine:
                 duration=time.time() - t0,
                 modules_run=self.module_names,
                 errors=errors,
-            )
+            )
