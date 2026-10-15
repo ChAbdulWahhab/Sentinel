@@ -17,11 +17,11 @@ class Severity(IntEnum):
     @property
     def color(self) -> str:
         return {
-            Severity.CRITICAL: "bright_red",
-            Severity.HIGH: "red",
-            Severity.MEDIUM: "yellow",
-            Severity.LOW: "cyan",
-            Severity.INFO: "blue",
+            Severity.CRITICAL: "#dc2626",
+            Severity.HIGH: "#ea580c",
+            Severity.MEDIUM: "#f59e0b",
+            Severity.LOW: "#60a5fa",
+            Severity.INFO: "#6b7280",
         }[self]
 
     @property

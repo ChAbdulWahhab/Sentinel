@@ -49,14 +49,14 @@ class ScanProgress:
 
         self.console = console or Console()
         self.progress = Progress(
-            SpinnerColumn(style="dim cyan", finished_text="[green]✓[/green]"),
+            SpinnerColumn(style="bold #dc2626", finished_text="[green]✓[/green]"),
             TextColumn(
                 "[bold white]{task.description:<20}",
                 table_column=Column(width=20, no_wrap=True, overflow="ellipsis"),
             ),
             BarColumn(
                 bar_width=16,
-                complete_style="dim cyan",
+                complete_style="bold #dc2626",
                 finished_style="dim green",
                 table_column=Column(width=16, no_wrap=True),
             ),

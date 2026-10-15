@@ -24,19 +24,23 @@ console = Console()
 
 # ---------- Menu entries ----------
 MENU_OPTIONS = [
-    ("1", "New Scan",          "Scan a new target"),
-    ("2", "View Past Reports", "Browse reports folder"),
-    ("3", "List Modules",      "View all 23 scan modules"),
-    ("4", "Check Target Health","Headers + TLS + DNS checks only"),
-    ("5", "Settings",          "Configuration and defaults"),
-    ("6", "Legal & Terms",     "Legal disclaimer and usage terms"),
-    ("7", "About",             "Version and project credits"),
-    ("0", "Exit",              "Exit application"),
+    ("1", "New Scan",           "Scan a target domain e.g. https://example.com"),
+    ("2", "View Past Reports",  "Browse reports folder"),
+    ("3", "List Modules",       "View all 35 scan modules"),
+    ("4", "Check Target Health", "Headers + TLS + DNS checks only"),
+    ("5", "Settings",           "Configuration and defaults"),
+    ("6", "Legal & Terms",      "Legal disclaimer and usage terms"),
+    ("7", "About",              "Version and project credits"),
+    ("0", "Exit",               "Exit application"),
 ]
 
 
 # ---------- Rendering ----------
 def _render_menu() -> None:
+    from veylance.ui.tables import get_safe_box, is_unicode_supported
+    box_style = get_safe_box(console)
+    bullet = "◆" if is_unicode_supported(console) else "*"
+
     t = Table(show_header=False, box=None, padding=(0, 2), expand=True)
     t.add_column("Key", style="bold cyan", width=4, justify="right", no_wrap=True)
     t.add_column("Option", style="bold white", min_width=18, max_width=24, no_wrap=False, overflow="fold")
@@ -44,15 +48,14 @@ def _render_menu() -> None:
     for key, label, desc in MENU_OPTIONS:
         t.add_row(f"[{key}]", label, desc)
 
-    from rich import box
     console.print()
     console.print(
         Panel(
             t,
-            title=f"[bold white]{APP_NAME}[/bold white] [dim]v{VERSION}[/dim]",
+            title=f"[bold #dc2626]{bullet}[/bold #dc2626] [bold white]{APP_NAME}[/bold white] [dim]v{VERSION}[/dim]",
             title_align="left",
-            border_style="bright_black",
-            box=box.ROUNDED,
+            border_style="#dc2626",
+            box=box_style,
             padding=(1, 2),
             expand=True,
         )

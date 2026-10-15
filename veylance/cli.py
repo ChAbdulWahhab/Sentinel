@@ -152,7 +152,7 @@ def scan(
     no_history = bool(_unwrap(no_history, False))
     config = _unwrap(config, None)
 
-    print_banner(console, no_color=no_color)
+    print_banner(console, target=url, no_color=no_color)
     setup_logger(verbose=verbose, quiet=quiet, debug=debug)
 
 
